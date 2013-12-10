@@ -1,4 +1,4 @@
-inGenerator Base cookbook
+inGenerator MySQL cookbook
 =================================
 [![Build Status](https://travis-ci.org/ingenerator/chef-ingenerator-mysql.png?branch=master)](https://travis-ci.org/ingenerator/chef-ingenerator-mysql)
 
@@ -30,7 +30,7 @@ depends 'ingenerator-mysql'
 User passwords
 --------------
 > By default, the root password is set to 'mysql' and the app user password to the project name. This is valid for
-> development environments (which should not have secure credentials for anything) but you *MUST* ensure you define
+> development environments (which should not have secure credentials for anything) but you **MUST** ensure you define
 > secure passwords for a any production server. Generally available QA and similar hosts that could be compromised
 > should also have secure passwords, different to the ones used in production.
 > The recipes will emit a warning log if you deploy outside Vagrant with an insecure password.
@@ -63,7 +63,7 @@ The application database user, by default, can only connect from localhost but y
 customised by setting the appropriate key in `node['project']['services']['db']['privileges'][{mysql permission name}]`
 to true.
 
-> *Security Considerations!*
+> **Security Considerations!**
 > Granting granting elevated privileges to a user that runs in the context of a web application is a likely security
 > hole. Before activating additional privileges for the application user you should consider whether you can either
 > use a separate database user (for example, for command line admin tasks that run outside the web context) or implement
