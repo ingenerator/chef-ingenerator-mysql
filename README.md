@@ -27,6 +27,14 @@ Have your main project cookbook *depend* on ingenerator-mysql by editing the `me
 depends 'ingenerator-mysql'
 ```
 
+User passwords
+--------------
+> By default, the root password is set to 'mysql' and the app user password to the project name. This is valid for
+> development environments (which should not have secure credentials for anything) but you *MUST* ensure you define
+> secure passwords for a any production server. Generally available QA and similar hosts that could be compromised
+> should also have secure passwords, different to the ones used in production.
+> The recipes will emit a warning log if you deploy outside Vagrant with an insecure password.
+
 Recipes
 -------
 
@@ -42,6 +50,25 @@ This recipe will:
 * create a schema for the application
 * create a non-root user account for the application - by default only with permissions on the app schema
 * if running on vagrant, bind mysql to any interface and allow remote root access so workbench etc work from the host
+
+### `ingenerator-mysql::app_db_server`
+This is intended to be run on the database server instance for an application (and is included with
+the standard `ingenerator-mysql::server` recipe above). It handles two main tasks:
+
+* create a schema for the application - named with the project name by default
+* create a restricted-privilege database user for use by general application code - again with the project name by default
+
+The application database user, by default, can only connect from localhost but you can configure this by setting the
+`node['project']['services']['db']['connect_anywhere']` attribute to true. It has limited permissions which can be
+customised by setting the appropriate key in `node['project']['services']['db']['privileges'][{mysql permission name}]`
+to true.
+
+> *Security Considerations!*
+> Granting granting elevated privileges to a user that runs in the context of a web application is a likely security
+> hole. Before activating additional privileges for the application user you should consider whether you can either
+> use a separate database user (for example, for command line admin tasks that run outside the web context) or implement
+> a message queue or similar so that the web process can only trigger a set of whitelisted application use cases which
+> executed by a privileged user in a separate process.
 
 ### `ingenerator-mysql::dev-db`
 This recipe will:

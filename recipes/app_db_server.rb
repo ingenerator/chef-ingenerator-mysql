@@ -20,19 +20,41 @@
 # limitations under the License.
 #
 
+app_db_attributes = node['project']['services']['db']
+
+root_connection_details = {
+  :host     => 'localhost',
+  :username => 'root',
+  :password => node['mysql']['server_root_password']
+}
+
+
 # Security check for using default passwords outside vagrant
 if node['vagrant'].nil?
-  if (node['project']['services']['db']['pasword'] == node['project']['name'])
+  if (app_db_attributes['pasword'] == node['project']['name'])
     Chef::Log.warn('Your app db password is not secure and you are not running under vagrant - check your configuration')
   end
 end
 
-mysql_database node['project']['services']['db']['schema'] do
+# Create the application database
+mysql_database app_db_attributes['schema'] do
   action      :create
-  connection(
-    :host =>     'localhost',
-    :username => 'root',
-    :password => node['mysql']['server_root_password']
-  )
+  connection  root_connection_details
+end
+
+# Create the standard application database user with the configured privileges
+allow_privileges = []
+app_db_attributes['privileges'].each do |privilege, should_grant|
+  allow_privileges << privilege if should_grant
+end
+allow_privileges.sort
+
+mysql_database_user app_db_attributes['user'] do
+  action        :grant
+  connection    root_connection_details
+  database_name app_db_attributes['schema']
+  host          app_db_attributes['connect_anywhere'] ? '%' : 'localhost'
+  password      app_db_attributes['password']
+  privileges    allow_privileges.sort
 end
 

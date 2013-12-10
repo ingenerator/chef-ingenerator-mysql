@@ -25,9 +25,30 @@
 # Credentials that are used to create the application db user and manage app config files
 # At least the password needs to be overridden to something secure in a production environment
 project_name = (node['project'] && node['project']['name']) || 'ingenerator'
-default['project']['services']['db']['schema']   = project_name
-default['project']['services']['db']['user']     = project_name
-default['project']['services']['db']['password'] = project_name
+default['project']['services']['db']['schema']           = project_name
+default['project']['services']['db']['user']             = project_name
+default['project']['services']['db']['password']         = project_name
 
+# If set, the application database user can connect from anywhere
+default['project']['services']['db']['connect_anywhere'] = false
+
+# Configure the default mysql database privileges the app user should have - restricted by default
+# All available privileges are in the hash, first set to false and then the required privs are true
+# Assign an override value to remove or grant different privileges for your app - but consider
+# whether you should instead be running privileged db code in a non-web process on its own user
+['CREATE', 'DROP', 'LOCK TABLES', 'EVENT', 'ALTER', 'DELETE', 'INDEX', 'INSERT' , 'SELECT',
+ 'UPDATE', 'CREATE TEMPORARY TABLES', 'TRIGGER', 'CREATE VIEW', 'SHOW VIEW', 'ALTER ROUTINE',
+ 'CREATE ROUTINE', 'EXECUTE', 'FILE', 'CREATE TABLESPACE', 'CREATE USER', 'PROCESS', 'PROXIES',
+ 'RELOAD', 'REPLICATION CLIENT', 'REPLICATION SLAVE', 'SHOW DATABASES', 'SHUTDOWN', 'SUPER'
+].each do |privilege|
+  default['project']['services']['db']['privileges'][privilege] = false
+end
+
+["LOCK TABLES", "DELETE", "INSERT", "SELECT", "UPDATE", "EXECUTE"
+].each do |privilege|
+  default['project']['services']['db']['privileges'][privilege] = true
+end
+
+# --- Language and application bindings
 # Trigger PHP to install the php5-mysql package
 default['php']['module_packages']['php5-mysql'] = true
