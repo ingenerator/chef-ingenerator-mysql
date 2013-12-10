@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'ingenerator-mysql::app_db', :focus => true do
+describe 'ingenerator-mysql::app_db' do
   let (:chef_run) { ChefSpec::Runner.new.converge(described_recipe) }
 
   its "recipe itself does nothing" do
