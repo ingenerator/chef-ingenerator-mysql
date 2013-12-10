@@ -26,4 +26,8 @@ default['mysql']['server_root_password']   = 'mysql'
 default['mysql']['server_repl_password']   = 'mysql'
 
 # Define the bind port - default to localhost-only in production for security
-default['mysql']['bind_address'] = '127.0.0.1'
+if node['vagrant'].nil?
+  default['mysql']['bind_address'] = '127.0.0.1'
+else
+  default['mysql']['bind_address'] = '0.0.0.0'
+end

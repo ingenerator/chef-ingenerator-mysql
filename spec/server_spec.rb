@@ -27,4 +27,17 @@ describe 'ingenerator-mysql::server' do
     chef_run.should include_recipe "ingenerator-mysql::app_db_server"
   end
 
+  context "when running outside vagrant" do
+    it "binds to 127.0.0.1 by default to prevent external connections" do
+      # most of our projects are single-host, so should set separately
+      chef_run.node['mysql']['bind_address'].should eq('127.0.0.1')
+    end
+  end
+
+  context "when running under vagrant" do
+    it "binds to 0.0.0.0" do
+      chef_run.node['mysql']['bind_address'].should eq('127.0.0.1')
+    end
+  end
+
 end
