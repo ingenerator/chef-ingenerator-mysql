@@ -20,4 +20,11 @@
 # limitations under the License.
 #
 
+# Security check for using default passwords outside vagrant
+if node['vagrant'].nil?
+  if (node['mysql']['server_root_password'] == 'mysql')
+    Chef::Log.warn('Your root db password is not secure and you are not running under vagrant - check your configuration')
+  end
+end
 
+# Actual management is done in the mysql cookbook based on the attributes defined

@@ -1,9 +1,9 @@
 #
-# Installs the database server for the application
+# Installs the database schema and user required for the application itself
 #
 # Author::  Andrew Coulton (<andrew@ingenerator.com>)
 # Cookbook Name:: ingenerator-mysql
-# Recipe:: server
+# Recipe:: app_db_server
 #
 # Copyright 2012-13, inGenerator Ltd
 #
@@ -20,4 +20,19 @@
 # limitations under the License.
 #
 
+# Security check for using default passwords outside vagrant
+if node['vagrant'].nil?
+  if (node['project']['services']['db']['pasword'] == node['project']['name'])
+    Chef::Log.warn('Your app db password is not secure and you are not running under vagrant - check your configuration')
+  end
+end
+
+mysql_database node['project']['services']['db']['schema'] do
+  action      :create
+  connection(
+    :host =>     'localhost',
+    :username => 'root',
+    :password => node['mysql']['server_root_password']
+  )
+end
 

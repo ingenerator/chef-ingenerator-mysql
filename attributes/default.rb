@@ -25,9 +25,15 @@ default['mysql']['server_debian_password'] = 'mysql'
 default['mysql']['server_root_password']   = 'mysql'
 default['mysql']['server_repl_password']   = 'mysql'
 
-# Define the bind port - default to localhost-only in production for security
+# Define network and security related attributes for vagrant or non-vagrant runs
 if node['vagrant'].nil?
+  # Define the bind port - default to localhost-only in production for security
   default['mysql']['bind_address'] = '127.0.0.1'
+  default['mysql']['allow_remote_root'] = false
 else
   default['mysql']['bind_address'] = '0.0.0.0'
+  default['mysql']['allow_remote_root'] = true
 end
+
+# Define security-related settings
+default['mysql']['remove_anonymous_users'] = true
