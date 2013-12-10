@@ -74,7 +74,42 @@ to true.
 This recipe will:
 
 * provision a standard basic development database if missing
-* wipe and reinstate the development database if configured or if the dump files have changed
+* run SQL files against the development database if configured or if the dump files have changed
+
+To use it, add SQL files that take the desired action - generally, drop an entire table and recreate it - as
+cookbook files in your project.
+
+```sql
+/* application-cookbook/files/default/dev_db/users.sql */
+CREATE SCHEMA myapplication IF NOT EXIST;
+DROP TABLE IF EXISTS users;
+CREATE TABLE users /*....
+```
+
+Add each file to the `node['mysql']['dev_db']['sql_files']` hash - for example:
+
+```ruby
+node.default['mysql']['dev_db']['sql_files']['application-coobook::dev_db/users.sql'] = true
+```
+
+By default, the files will be copied to a local path on your machine in order to detect if they
+have changed since the last deploy. Any changed files will be passed to mysql as root during
+deployment.
+
+You can force a reprovision by setting `node['mysql']['dev_db']['recreate_always']` to true -
+for example, you'd probably do so in a build slave role to ensure the test db was always clean.
+
+Alternatively you can force a one-off reprovision with an environment variable - eg
+`$ RECREATE_DEV_DB=1 architecture/provision dev-server`.
+
+You should consider setting the attribute from an environment variable in your Vagrantfile to
+allow the same workflow on your host machine.
+
+> **DANGER!**
+> If included, this recipe will without warning run your SQL scripts, probably wiping your entire
+> database. To reduce the risk you accidentally run it on a production box, it will fail if the
+> root password is anything other than "mysql". It should be obvious that inclusion of this recipe
+> should be treated with care.
 
 Attributes
 ----------
