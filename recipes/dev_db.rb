@@ -39,7 +39,7 @@ node['mysql']['dev_db']['sql_files'].each do |cook_file, should_provision|
   mysql_command = "cat #{local_path} | mysql -uroot -p#{node['mysql']['server_root_password']}"
 
   # Ensure the local directory exists
-  directory Pathname.new(local_path).parent do
+  directory File.dirname(local_path) do
     action    :create
     recursive true
     mode      0755
