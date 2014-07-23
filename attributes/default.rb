@@ -37,3 +37,7 @@ end
 
 # Define security-related settings
 default['mysql']['remove_anonymous_users'] = true
+
+# Ensure that apt update runs at compile-time, to prevent issues with installing the mysql client 
+# (see https://github.com/opscode-cookbooks/apt/pull/75)
+default['apt']['compile_time_update'] = true

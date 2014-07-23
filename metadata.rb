@@ -10,5 +10,6 @@ version '0.1.0'
   supports os
 end
 
+depends "apt", "~> 2.4"
 depends "database"
 depends "mysql"
