@@ -3,13 +3,13 @@ require 'spec_helper'
 describe 'ingenerator-mysql::app_db' do
   let (:chef_run) { ChefSpec::Runner.new.converge(described_recipe) }
 
-  its "recipe itself does nothing" do
+  it "does nothing in the recipe" do
    chef_run.resource_collection.should be_empty
   end
 
   context "with its attributes" do
     it "adds php5-mysql to the list of extensions the php cookbook should install" do
-      chef_run.node['php']['module_packages']['php5-mysql'].should be_true
+      chef_run.node['php']['module_packages']['php5-mysql'].should be true
     end
 
     context "with a project name" do

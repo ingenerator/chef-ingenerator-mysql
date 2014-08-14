@@ -35,7 +35,7 @@ describe 'ingenerator-mysql::dev_db' do
 
     context "by default" do
       it "is set to recreate only on changes" do
-        chef_run.node['mysql']['dev_db']['recreate_always'].should be_false
+        chef_run.node['mysql']['dev_db']['recreate_always'].should be false
       end
 
       it "prepares an execute command to send the sql file to mysql as root" do
@@ -71,7 +71,7 @@ describe 'ingenerator-mysql::dev_db' do
       end
 
       it "sets the mysql.dev_db.recreate_always attribute true" do
-        chef_run.node['mysql']['dev_db']['recreate_always'].should be_true
+        chef_run.node['mysql']['dev_db']['recreate_always'].should be true
       end
     end
   end

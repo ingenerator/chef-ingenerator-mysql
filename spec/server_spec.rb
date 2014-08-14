@@ -28,7 +28,7 @@ describe 'ingenerator-mysql::server' do
   end
 
   it "removes anonymous users" do
-    chef_run.node['mysql']['remove_anonymous_users'].should be_true
+    chef_run.node['mysql']['remove_anonymous_users'].should be true
   end
 
   context "when running outside vagrant" do
