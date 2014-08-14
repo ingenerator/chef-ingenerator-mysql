@@ -1,11 +1,11 @@
 #
-# Installs the database server for the application
+# Provisions custom mysql server configuration
 #
 # Author::  Andrew Coulton (<andrew@ingenerator.com>)
 # Cookbook Name:: ingenerator-mysql
-# Recipe:: server
+# Recipe:: custom_config
 #
-# Copyright 2012-13, inGenerator Ltd
+# Copyright 2014, inGenerator Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,8 +20,20 @@
 # limitations under the License.
 #
 
-include_recipe "mysql::server"
-include_recipe "ingenerator-mysql::custom_config"
-include_recipe "database::mysql"
-include_recipe "ingenerator-mysql::root_user"
-include_recipe "ingenerator-mysql::app_db_server"
+if node['mysql']['tunable']
+  keys = node['mysql']['tunable'].keys.join(", ")
+  raise ArgumentError, "node['mysql']['tunable'] is no longer supported - migrate the keys #{keys} to node['mysql]['custom_config']"
+end
+
+# Define the service for notification
+service 'mysql'
+
+template "/etc/mysql/conf.d/custom.cnf" do
+  mode  0600
+  owner 'mysql'
+  group 'mysql'
+  variables(
+    :options => node['mysql']['custom_config']
+  )
+  notifies :restart, 'service[mysql]'
+end

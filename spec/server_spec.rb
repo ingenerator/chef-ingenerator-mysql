@@ -15,6 +15,10 @@ describe 'ingenerator-mysql::server' do
     expect(chef_run).to include_recipe "mysql::server"
   end
 
+  it "installs custom configuration" do
+    expect(chef_run).to include_recipe "ingenerator-mysql::custom_config"
+  end
+
   it "includes the database recipe to load chef helpers and mysql client" do
     expect(chef_run).to include_recipe "database::mysql"
   end
