@@ -6,17 +6,17 @@ describe 'ingenerator-mysql::app_db_server' do
   let (:default_app_privileges) { ["LOCK TABLES", "DELETE", "INSERT", "SELECT", "UPDATE", "EXECUTE"].sort }
 
   before (:each) do
-    Chef::Log.stub(:warn)
+    allow(Chef::Log).to receive(:warn)
   end
 
   it "creates a database for the application" do
-    chef_run.should create_mysql_database(chef_run.node['project']['services']['db']['schema']).with(
+    expect(chef_run).to create_mysql_database(chef_run.node['project']['services']['db']['schema']).with(
       :connection => root_connection
     )
   end
 
   it "creates the application database user" do
-    chef_run.should grant_mysql_database_user(chef_run.node['project']['services']['db']['user']).with(
+    expect(chef_run).to grant_mysql_database_user(chef_run.node['project']['services']['db']['user']).with(
       :password   => chef_run.node['project']['services']['db']['password'],
       :connection => root_connection
     )
@@ -24,19 +24,19 @@ describe 'ingenerator-mysql::app_db_server' do
 
   context "by default" do
     it "allows the app user to connect from localhost only" do
-      chef_run.should grant_mysql_database_user(chef_run.node['project']['services']['db']['user']).with(
+      expect(chef_run).to grant_mysql_database_user(chef_run.node['project']['services']['db']['user']).with(
         :host  => 'localhost'
       )
     end
 
     it "grants user-level privileges to the app user" do
-      chef_run.should grant_mysql_database_user(chef_run.node['project']['services']['db']['user']).with(
+      expect(chef_run).to grant_mysql_database_user(chef_run.node['project']['services']['db']['user']).with(
         :privileges => default_app_privileges
       )
     end
 
     it "only grants privileges on the application schema" do
-      chef_run.should grant_mysql_database_user(chef_run.node['project']['services']['db']['user']).with(
+      expect(chef_run).to grant_mysql_database_user(chef_run.node['project']['services']['db']['user']).with(
         :database_name => chef_run.node['project']['services']['db']['schema']
       )
     end
@@ -50,7 +50,7 @@ describe 'ingenerator-mysql::app_db_server' do
     end
 
     it "allows the app user to connect from any host" do
-      chef_run.should grant_mysql_database_user(chef_run.node['project']['services']['db']['user']).with(
+      expect(chef_run).to grant_mysql_database_user(chef_run.node['project']['services']['db']['user']).with(
         :host  => '%'
       )
     end
@@ -66,7 +66,7 @@ describe 'ingenerator-mysql::app_db_server' do
     it "grants the app user the additional privileges" do
       custom_privs = default_app_privileges
       custom_privs << 'DROP'
-      chef_run.should grant_mysql_database_user(chef_run.node['project']['services']['db']['user']).with(
+      expect(chef_run).to grant_mysql_database_user(chef_run.node['project']['services']['db']['user']).with(
         :privileges  => custom_privs.sort
       )
     end
@@ -82,7 +82,7 @@ describe 'ingenerator-mysql::app_db_server' do
     it "grants the app user the additional privileges" do
       custom_privs = default_app_privileges
       custom_privs.delete('DELETE')
-      chef_run.should grant_mysql_database_user(chef_run.node['project']['services']['db']['user']).with(
+      expect(chef_run).to grant_mysql_database_user(chef_run.node['project']['services']['db']['user']).with(
         :privileges  => custom_privs.sort
       )
     end

@@ -21,13 +21,13 @@ describe 'ingenerator-mysql::dev_db' do
     let (:mysql_command)  { "cat #{local_schema_path}/dev_db/table.sql | mysql -uroot -p#{chef_run.node['mysql']['server_root_password']}" }
 
     it "ensures the parent directory exists" do
-      chef_run.should create_directory(local_schema_path+'/dev_db').with(
+      expect(chef_run).to create_directory(local_schema_path+'/dev_db').with(
         :recursive  => true
 	  )
     end
 
     it "copies the sql files from the right cookbooks to the local path" do
-      chef_run.should create_cookbook_file(local_file_path).with(
+      expect(chef_run).to create_cookbook_file(local_file_path).with(
         :cookbook => 'mycookbook',
         :source   => 'dev_db/table.sql'
       )
@@ -35,17 +35,17 @@ describe 'ingenerator-mysql::dev_db' do
 
     context "by default" do
       it "is set to recreate only on changes" do
-        chef_run.node['mysql']['dev_db']['recreate_always'].should be false
+        expect(chef_run.node['mysql']['dev_db']['recreate_always']).to be false
       end
 
       it "prepares an execute command to send the sql file to mysql as root" do
         execute = chef_run.find_resource(:execute, mysql_command)
-        execute.action.should eq([:nothing])
+        expect(execute.action).to eq([:nothing])
       end
 
       it "notifies the provisioning script to run if the file has changed" do
         cookbook_file = chef_run.find_resource(:cookbook_file, local_file_path)
-        cookbook_file.should notify('execute['+mysql_command+']').to(:run).immediately
+        expect(cookbook_file).to notify('execute['+mysql_command+']').to(:run).immediately
       end
     end
 
@@ -56,12 +56,12 @@ describe 'ingenerator-mysql::dev_db' do
       end
 
       it "executes the mysql command even if there are no changes" do
-        chef_run.should run_execute(mysql_command)
+        expect(chef_run).to run_execute(mysql_command)
       end
 
       it "does not define a notification on the cookbook file" do
         cookbook_file = chef_run.find_resource(:cookbook_file, local_file_path)
-        cookbook_file.should_not notify('execute['+mysql_command+']').to(:run)
+        expect(cookbook_file).not_to notify('execute['+mysql_command+']').to(:run)
       end
     end
 
@@ -71,7 +71,7 @@ describe 'ingenerator-mysql::dev_db' do
       end
 
       it "sets the mysql.dev_db.recreate_always attribute true" do
-        chef_run.node['mysql']['dev_db']['recreate_always'].should be true
+        expect(chef_run.node['mysql']['dev_db']['recreate_always']).to be true
       end
     end
   end
@@ -84,15 +84,15 @@ describe 'ingenerator-mysql::dev_db' do
     end
 
     it "does not create any directories" do
-      chef_run.find_resources(:directory).should be_empty
+      expect(chef_run.find_resources(:directory)).to be_empty
     end
 
     it "does not copy any files" do
-      chef_run.find_resources(:cookbook_file).should be_empty
+      expect(chef_run.find_resources(:cookbook_file)).to be_empty
     end
 
     it "does not prepare any mysql commands" do
-      chef_run.find_resources(:execute).should be_empty
+      expect(chef_run.find_resources(:execute)).to be_empty
     end
   end
 end

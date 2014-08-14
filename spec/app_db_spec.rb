@@ -4,12 +4,12 @@ describe 'ingenerator-mysql::app_db' do
   let (:chef_run) { ChefSpec::Runner.new.converge(described_recipe) }
 
   it "does nothing in the recipe" do
-   chef_run.resource_collection.should be_empty
+   expect(chef_run.resource_collection).to be_empty
   end
 
   context "with its attributes" do
     it "adds php5-mysql to the list of extensions the php cookbook should install" do
-      chef_run.node['php']['module_packages']['php5-mysql'].should be true
+      expect(chef_run.node['php']['module_packages']['php5-mysql']).to be true
     end
 
     context "with a project name" do
@@ -20,29 +20,29 @@ describe 'ingenerator-mysql::app_db' do
       end
 
       it "sets the schema name to the project name" do
-        chef_run.node['project']['services']['db']['schema'].should eq('someproject')
+        expect(chef_run.node['project']['services']['db']['schema']).to eq('someproject')
       end
 
       it "sets the application user to the project name" do
-        chef_run.node['project']['services']['db']['user'].should eq('someproject')
+        expect(chef_run.node['project']['services']['db']['user']).to eq('someproject')
       end
 
       it "sets the application password to the project name" do
-        chef_run.node['project']['services']['db']['password'].should eq('someproject')
+        expect(chef_run.node['project']['services']['db']['password']).to eq('someproject')
       end
     end
 
     context "with no project name" do
       it "sets the schema name to ingenerator" do
-        chef_run.node['project']['services']['db']['schema'].should eq('ingenerator')
+        expect(chef_run.node['project']['services']['db']['schema']).to eq('ingenerator')
       end
 
       it "sets the application user to ingenerator" do
-        chef_run.node['project']['services']['db']['user'].should eq('ingenerator')
+        expect(chef_run.node['project']['services']['db']['user']).to eq('ingenerator')
       end
 
       it "sets the application password to ingenerator" do
-        chef_run.node['project']['services']['db']['password'].should eq('ingenerator')
+        expect(chef_run.node['project']['services']['db']['password']).to eq('ingenerator')
       end
     end
 

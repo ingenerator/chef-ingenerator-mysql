@@ -11,7 +11,7 @@ describe 'ingenerator-mysql::root_user' do
     end
 
     it "allows the root user to connect from any address" do
-      chef_run.node['mysql']['allow_remote_root'].should be true
+      expect(chef_run.node['mysql']['allow_remote_root']).to be true
     end
 
     it "does not emit a root password security warning" do
@@ -25,11 +25,11 @@ describe 'ingenerator-mysql::root_user' do
 
   context "when not under vagrant" do
     before (:each) do
-      Chef::Log.stub(:warn)
+      allow(Chef::Log).to receive(:warn)
     end
 
     it "does not allow root to connect remotely" do
-      chef_run.node['mysql']['allow_remote_root'].should be false
+      expect(chef_run.node['mysql']['allow_remote_root']).to be false
     end
 
     it "emits a warning if the root password is 'mysql'" do
