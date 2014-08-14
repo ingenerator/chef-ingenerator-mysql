@@ -6,7 +6,7 @@ describe 'ingenerator-mysql::root_user' do
   context "when running under vagrant" do
     let (:chef_run) do
       ChefSpec::Runner.new do |node|
-        node.set['vagrant'] = {}
+        node.automatic['etc']['passwd']['vagrant'] = {}
       end.converge(described_recipe)
     end
 

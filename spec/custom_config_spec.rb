@@ -18,7 +18,7 @@ describe 'ingenerator-mysql::custom_config' do
     chef_run.converge(described_recipe)
     
     expect(chef_run).to render_file('/etc/mysql/conf.d/custom.cnf')
-       .with_content(/(^|\n)\[mysqld\]\ncustom_var=value/)
+       .with_content(/(^|\n)\[mysqld\][^\[]*?\ncustom_var=value\n/)
   end
   
   it "sorts custom attributes to prevent unexpected file changes" do
@@ -29,7 +29,7 @@ describe 'ingenerator-mysql::custom_config' do
     chef_run.converge(described_recipe)
 
     expect(chef_run).to render_file('/etc/mysql/conf.d/custom.cnf')
-       .with_content(/(^|\n)\[mysqld\]\ncustom_var=value\nother_var=5/)
+       .with_content(/(^|\n)\[mysqld\][^\[]*?\ncustom_var=value\n[^\[]*?\n?other_var=5\n/)
   end
   
   it "skips config attributes where the option is nil" do
@@ -52,5 +52,12 @@ describe 'ingenerator-mysql::custom_config' do
       chef_run.converge described_recipe 
     }.to raise_error(ArgumentError)
   end
-  
+
+  it "raises error if the node still defines old-style bind_address attributes" do
+    chef_run.node.set['mysql']['bind_address'] = '0.0.0.0'
+    expect { 
+      chef_run.converge described_recipe 
+    }.to raise_error(ArgumentError)
+  end
+
 end

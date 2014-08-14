@@ -1,11 +1,9 @@
 #
-# Installs the database server for the application
+# Helpers for the cookbook
 #
 # Author::  Andrew Coulton (<andrew@ingenerator.com>)
-# Cookbook Name:: ingenerator-mysql
-# Recipe:: server
 #
-# Copyright 2012-13, inGenerator Ltd
+# Copyright 2014, inGenerator Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,11 +18,11 @@
 # limitations under the License.
 #
 
-# Security check for using default passwords outside vagrant
-unless IngeneratorMysqlHelper.is_vagrant? node
-  if (node['mysql']['server_root_password'] == 'mysql')
-    Chef::Log.warn('Your root db password is not secure and you are not running under vagrant - check your configuration')
+class Chef::Recipe::IngeneratorMysqlHelper
+  
+  # Check if provisioning is running inside a vagrant instance - pass in the node
+  # to check.
+  def self.is_vagrant?(node)
+    node['etc'] && node['etc']['passwd'] && node['etc']['passwd']['vagrant']
   end
 end
-
-# Actual management is done in the mysql cookbook based on the attributes defined

@@ -1,7 +1,14 @@
 require 'spec_helper'
 
 describe 'ingenerator-mysql::server' do
-  let (:chef_run) { ChefSpec::Runner.new(platform:'ubuntu', version:'12.04').converge described_recipe }
+  let (:has_vagrant_user) { false }
+  let (:chef_run) do 
+    ChefSpec::Runner.new(platform:'ubuntu', version:'12.04') do | node |
+      if has_vagrant_user
+        node.automatic['etc']['passwd']['vagrant'] = {}
+      end
+    end.converge described_recipe
+  end
 
   before do
     # stub guards used by the included recipes
@@ -36,15 +43,19 @@ describe 'ingenerator-mysql::server' do
   end
 
   context "when running outside vagrant" do
+    let (:has_vagrant_user) { false }
+       
     it "binds to 127.0.0.1 by default to prevent external connections" do
       # most of our projects are single-host, so should set separately
-      expect(chef_run.node['mysql']['bind_address']).to eq('127.0.0.1')
+      expect(chef_run.node['mysql']['custom_config']['bind-address']).to eq('127.0.0.1')
     end
   end
 
   context "when running under vagrant" do
+    let (:has_vagrant_user) { true }
+    
     it "binds to 0.0.0.0" do
-      expect(chef_run.node['mysql']['bind_address']).to eq('127.0.0.1')
+      expect(chef_run.node['mysql']['custom_config']['bind-address']).to eq('0.0.0.0')
     end
   end
 
