@@ -12,4 +12,4 @@ end
 
 depends "apt", "~> 2.4"
 depends "database"
-depends "mysql"
+depends "mysql", "~> 5.3"
