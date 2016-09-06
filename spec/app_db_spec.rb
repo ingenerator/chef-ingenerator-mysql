@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe 'ingenerator-mysql::app_db' do
-  let (:chef_run) { ChefSpec::Runner.new.converge(described_recipe) }
+  let (:chef_run) { ChefSpec::SoloRunner.new.converge(described_recipe) }
 
   it "does nothing in the recipe" do
    expect(chef_run.resource_collection).to be_empty
@@ -14,8 +14,8 @@ describe 'ingenerator-mysql::app_db' do
 
     context "with a project name" do
       let (:chef_run) do
-        ChefSpec::Runner.new do |node|
-          node.set['project']['name'] = 'someproject'
+        ChefSpec::SoloRunner.new do |node|
+          node.normal['project']['name'] = 'someproject'
         end.converge(described_recipe)
       end
 

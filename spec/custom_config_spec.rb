@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe 'ingenerator-mysql::custom_config' do
-  let (:chef_run) { ChefSpec::Runner.new }
+  let (:chef_run) { ChefSpec::SoloRunner.new }
   
   it "installs the custom config file" do
     expect(chef_run.converge(described_recipe)).to create_template('/etc/mysql/conf.d/custom.cnf').with(
@@ -12,7 +12,7 @@ describe 'ingenerator-mysql::custom_config' do
   end
   
   it "renders each custom attribute to the config file" do
-    chef_run.node.set['mysql']['custom_config'] = {
+    chef_run.node.normal['mysql']['custom_config'] = {
       :custom_var => 'value'
     }
     chef_run.converge(described_recipe)
@@ -22,7 +22,7 @@ describe 'ingenerator-mysql::custom_config' do
   end
   
   it "sorts custom attributes to prevent unexpected file changes" do
-    chef_run.node.set['mysql']['custom_config'] = {
+    chef_run.node.normal['mysql']['custom_config'] = {
       :other_var   => 5,
       :custom_var => 'value'
     }
@@ -33,7 +33,7 @@ describe 'ingenerator-mysql::custom_config' do
   end
   
   it "skips config attributes where the option is nil" do
-    chef_run.node.set['mysql']['custom_config']['nilvar'] = nil
+    chef_run.node.normal['mysql']['custom_config']['nilvar'] = nil
     chef_run.converge(described_recipe)
 
     expect(chef_run).to_not render_file('/etc/mysql/conf.d/custom.cnf')
@@ -47,14 +47,14 @@ describe 'ingenerator-mysql::custom_config' do
   end
   
   it "raises error if the node still defines old-style tunable attributes" do
-    chef_run.node.set['mysql']['tunable']['someconfig']
+    chef_run.node.normal['mysql']['tunable']['someconfig']
     expect { 
       chef_run.converge described_recipe 
     }.to raise_error(ArgumentError)
   end
 
   it "raises error if the node still defines old-style bind_address attributes" do
-    chef_run.node.set['mysql']['bind_address'] = '0.0.0.0'
+    chef_run.node.normal['mysql']['bind_address'] = '0.0.0.0'
     expect { 
       chef_run.converge described_recipe 
     }.to raise_error(ArgumentError)

@@ -1,19 +1,19 @@
 require 'spec_helper'
 
 describe 'ingenerator-mysql::dev_db' do
-  let (:chef_run) { ChefSpec::Runner.new.converge(described_recipe) }
+  let (:chef_run) { ChefSpec::SoloRunner.new.converge(described_recipe) }
 
   context "if the root password is not mysql" do
     it "generates an exception to avoid accidentally running on a live database" do
-      chef_run.node.set['mysql']['server_root_password'] = 'somethingsecure'
+      chef_run.node.normal['mysql']['server_root_password'] = 'somethingsecure'
       expect { chef_run.converge(described_recipe) }.to raise_error(RuntimeError)
     end
   end
 
   context "when configured with cookbook file sql filenames" do
     let (:chef_run) do
-      ChefSpec::Runner.new do |node|
-        node.set['mysql']['dev_db']['sql_files'] = {'mycookbook::dev_db/table.sql' => true}
+      ChefSpec::SoloRunner.new do |node|
+        node.normal['mysql']['dev_db']['sql_files'] = {'mycookbook::dev_db/table.sql' => true}
       end.converge(described_recipe)
     end
     let (:local_schema_path) { chef_run.node['mysql']['dev_db']['schema_path'] }
@@ -51,7 +51,7 @@ describe 'ingenerator-mysql::dev_db' do
 
     context "if mysql.dev_db.recreate_always is set" do
       before (:each) do
-        chef_run.node.set['mysql']['dev_db']['recreate_always'] = true
+        chef_run.node.normal['mysql']['dev_db']['recreate_always'] = true
         chef_run.converge described_recipe
       end
 
@@ -78,8 +78,8 @@ describe 'ingenerator-mysql::dev_db' do
 
   context "when files have been disabled by attributes elsewhere" do
     let (:chef_run) do
-      ChefSpec::Runner.new do |node|
-        node.set['mysql']['dev_db']['sql_files'] = {'mycookbook::dev_db/table.sql' => false}
+      ChefSpec::SoloRunner.new do |node|
+        node.normal['mysql']['dev_db']['sql_files'] = {'mycookbook::dev_db/table.sql' => false}
       end.converge(described_recipe)
     end
 

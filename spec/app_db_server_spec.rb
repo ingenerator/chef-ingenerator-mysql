@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe 'ingenerator-mysql::app_db_server' do
-  let (:chef_run) { ChefSpec::Runner.new.converge(described_recipe) }
+  let (:chef_run) { ChefSpec::SoloRunner.new.converge(described_recipe) }
   let (:root_connection) { {:host => 'localhost', :username => 'root', :password => chef_run.node['mysql']['server_root_password']} }
   let (:default_app_privileges) { ["LOCK TABLES", "DELETE", "INSERT", "SELECT", "UPDATE", "EXECUTE"].sort }
 
@@ -44,8 +44,8 @@ describe 'ingenerator-mysql::app_db_server' do
 
   context "with project.services.db.connect_anywhere set" do
     let (:chef_run) do
-      ChefSpec::Runner.new do |node|
-        node.set['project']['services']['db']['connect_anywhere'] = true
+      ChefSpec::SoloRunner.new do |node|
+        node.normal['project']['services']['db']['connect_anywhere'] = true
       end.converge(described_recipe)
     end
 
@@ -58,8 +58,8 @@ describe 'ingenerator-mysql::app_db_server' do
 
   context "with extra permissions in project.services.db.privileges" do
     let (:chef_run) do
-      ChefSpec::Runner.new do |node|
-        node.set['project']['services']['db']['privileges']['DROP'] = true
+      ChefSpec::SoloRunner.new do |node|
+        node.normal['project']['services']['db']['privileges']['DROP'] = true
       end.converge(described_recipe)
     end
 
@@ -74,8 +74,8 @@ describe 'ingenerator-mysql::app_db_server' do
 
   context "with permissions disabled in project.services.db.allowed_operations" do
     let (:chef_run) do
-      ChefSpec::Runner.new do |node|
-        node.set['project']['services']['db']['privileges']['DELETE'] = false
+      ChefSpec::SoloRunner.new do |node|
+        node.normal['project']['services']['db']['privileges']['DELETE'] = false
       end.converge(described_recipe)
     end
 
@@ -90,8 +90,8 @@ describe 'ingenerator-mysql::app_db_server' do
 
   context "when running under vagrant" do
     let (:chef_run) do
-      ChefSpec::Runner.new do |node|
-        node.set['vagrant'] = {}
+      ChefSpec::SoloRunner.new do |node|
+        node.normal['vagrant'] = {}
       end.converge(described_recipe)
     end
 
@@ -109,7 +109,7 @@ describe 'ingenerator-mysql::app_db_server' do
       expect(Chef::Log).to receive(:warn).at_least(:once).with(
         'Your app db password is not secure and you are not running under vagrant - check your configuration'
       )
-      chef_run.node.set['mysql']['server_root_password'] = 'mysql'
+      chef_run.node.normal['mysql']['server_root_password'] = 'mysql'
       chef_run.converge(described_recipe)
     end
   end
