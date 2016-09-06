@@ -3,7 +3,7 @@ require 'spec_helper'
 describe 'ingenerator-mysql::server' do
   let (:has_vagrant_user) { false }
   let (:chef_run) do 
-    ChefSpec::Runner.new(platform:'ubuntu', version:'12.04') do | node |
+    ChefSpec::SoloRunner.new(platform:'ubuntu', version:'12.04') do | node |
       if has_vagrant_user
         node.automatic['etc']['passwd']['vagrant'] = {}
       end
