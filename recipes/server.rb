@@ -37,6 +37,7 @@ mysql_service 'default' do
   action                [:create, :start]
   bind_address          node['mysql']['bind_address']
   initial_root_password node['mysql']['server_root_password']
+  socket                node['mysql']['default_server_socket']
 end
 
 include_recipe "ingenerator-mysql::custom_config"

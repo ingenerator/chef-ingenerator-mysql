@@ -31,6 +31,11 @@ else
   default['mysql']['bind_address'] = '127.0.0.1'
 end
 
+# The mysql cookbook is built to provision multiple servers per instance and so places sockets
+# in non-standard places. By default, use the standard ubuntu socket path so that we don't have
+# to reconfigure all the various places that might attempt to connect to the instance.
+default['mysql']['default_server_socket'] = '/var/run/mysqld/mysqld.sock'
+
 # Ensure that apt update runs at compile-time, to prevent issues with installing the mysql client 
 # (see https://github.com/opscode-cookbooks/apt/pull/75)
 default['apt']['compile_time_update'] = true
