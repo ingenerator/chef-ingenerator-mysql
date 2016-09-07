@@ -63,6 +63,13 @@ describe 'ingenerator-mysql::server' do
       expect(chef_run).to include_recipe "ingenerator-mysql::custom_config"
     end
 
+    it 'installs and creates the mysql client with the dev package' do
+      expect(chef_run).to install_mysql_client_installation_package 'default'
+      # NB we probably shouldn't have to explicitly install this - this is a mysql cookbook bug
+      # see https://github.com/chef-cookbooks/mysql/issues/457
+      expect(chef_run).to install_package 'libmysqlclient-dev'
+    end
+
     it "installs the mysql2_chef_gem to enable database cookbook providers" do
       expect(chef_run).to install_mysql2_chef_gem 'default'
     end
