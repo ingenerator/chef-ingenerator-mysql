@@ -43,6 +43,12 @@ describe 'ingenerator-mysql::server' do
       :initial_root_password => chef_run.node['mysql']['server_root_password']
     )
   end
+  
+  it 'assigns the server socket path' do
+    expect(chef_run).to create_mysql_service('default').with(
+      :socket => chef_run.node['mysql']['default_server_socket']
+    )
+  end
 
   it "installs custom configuration" do
     expect(chef_run).to include_recipe "ingenerator-mysql::custom_config"
@@ -78,6 +84,13 @@ describe 'ingenerator-mysql::server' do
       expect(chef_run).to create_mysql_service('default').with(
         :bind_address => '0.0.0.0'
       )
+    end
+  end
+  
+  context 'with default configuration' do
+    it 'uses the standard ubuntu distribution path for the mysql socket' do
+      # For simple compatibility with mysql client software
+      expect(chef_run.node['mysql']['default_server_socket']).to eq('/var/run/mysqld/mysqld.sock')
     end
   end
 
