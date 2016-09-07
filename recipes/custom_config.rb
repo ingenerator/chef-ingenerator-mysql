@@ -25,19 +25,26 @@ if node['mysql']['tunable']
   raise ArgumentError, "node['mysql']['tunable'] is no longer supported - migrate the keys #{keys} to node['mysql]['custom_config']"
 end
 
-if node['mysql']['bind_address']
-  raise ArgumentError, "node['mysql']['bind_address'] is no longer supported - migrate to node['mysql]['custom_config']"
+if node['mysql']['custom_config'] && node['mysql']['custom_config']['bind_address']
+  raise ArgumentError, "node['mysql']['custom_config']['bind_address'] is no longer supported - migrate back to node['mysql]['bind_address']"
 end
 
-# Define the service for notification
-service 'mysql'
 
-template "/etc/mysql/conf.d/custom.cnf" do
-  mode  0600
-  owner 'mysql'
-  group 'mysql'
+# Options must be sorted in order, as Ruby doesn't guarantee hash order by default and so can cause
+# unexpected file changes
+options = []
+if node['mysql']['custom_config']
+  node['mysql']['custom_config'].sort.each do | key, value |
+    unless value.nil?
+      options << {key: key, value: value}
+    end
+  end
+end
+
+mysql_config 'custom' do
+  instance 'default'
+  source   'custom.cnf.erb'
   variables(
-    :options => node['mysql']['custom_config']
+    :options => options
   )
-  notifies :restart, 'service[mysql]'
 end
