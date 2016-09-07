@@ -33,6 +33,12 @@ unless invalid_configs.empty?
   )
 end
 
+if not_environment?(:localdev, :buildslave) && (node['mysql']['server_root_password'] === 'mysql')
+  raise ArgumentError.new(
+    'You must define a custom value for node.mysql.server_root_password outside productiony environments'
+  )
+end
+
 mysql_service 'default' do
   action                [:create, :start]
   bind_address          node['mysql']['bind_address']
@@ -46,5 +52,5 @@ include_recipe "ingenerator-mysql::custom_config"
 mysql2_chef_gem 'default' do
   action :install
 end
-include_recipe "ingenerator-mysql::root_user"
+
 include_recipe "ingenerator-mysql::app_db_server"

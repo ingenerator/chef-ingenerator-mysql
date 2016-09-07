@@ -14,5 +14,6 @@ end
 
 depends "apt", "~> 2.4"
 depends 'database', '~> 5.1.2'
+depends 'ingenerator-helpers', '~> 1.0'
 depends "mysql", "~> 8.0"
 depends 'mysql2_chef_gem', '~> 1.0'
