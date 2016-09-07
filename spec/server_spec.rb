@@ -34,6 +34,10 @@ describe 'ingenerator-mysql::server' do
     expect(chef_run).to create_mysql_service 'default'
   end
 
+  it "starts the default mysql service" do
+    expect(chef_run).to start_mysql_service 'default'
+  end
+
   it 'assigns the initial root password' do
     expect(chef_run).to create_mysql_service('default').with(
       :initial_root_password => chef_run.node['mysql']['server_root_password']

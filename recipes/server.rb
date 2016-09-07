@@ -34,6 +34,7 @@ unless invalid_configs.empty?
 end
 
 mysql_service 'default' do
+  action                [:create, :start]
   bind_address          node['mysql']['bind_address']
   initial_root_password node['mysql']['server_root_password']
 end
