@@ -2,7 +2,6 @@
 # Local changes will be overwritten.
 
 [mysqld]
-<% @options.sort.map do |key, value| -%>
-<%   next if value.nil? -%>
-<%="#{key}=#{value}"%>
+<% @options.each do |option| -%>
+<%=option[:key]%>=<%=option[:value]%>
 <% end -%>

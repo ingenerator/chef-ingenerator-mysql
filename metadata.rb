@@ -13,5 +13,7 @@ version '0.1.0'
 end
 
 depends "apt", "~> 2.4"
-depends 'database', '~> 2.3.1'
-depends "mysql", "~> 5.3"
+depends 'database', '~> 5.1.2'
+depends 'ingenerator-helpers', '~> 1.0'
+depends "mysql", "~> 8.0"
+depends 'mysql2_chef_gem', '~> 1.0'

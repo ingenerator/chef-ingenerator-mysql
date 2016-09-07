@@ -22,13 +22,6 @@
 
 app_db_attributes = node['project']['services']['db']
 
-root_connection_details = {
-  :host     => 'localhost',
-  :username => 'root',
-  :password => node['mysql']['server_root_password']
-}
-
-
 # Security check for using default passwords outside vagrant
 if node['vagrant'].nil?
   if (app_db_attributes['pasword'] == node['project']['name'])
@@ -39,7 +32,7 @@ end
 # Create the application database
 mysql_database app_db_attributes['schema'] do
   action      :create
-  connection  root_connection_details
+  connection  Chef::Recipe::IngeneratorMysqlHelper.root_connection(node)
 end
 
 # Create the standard application database user with the configured privileges
@@ -51,7 +44,7 @@ allow_privileges.sort
 
 mysql_database_user app_db_attributes['user'] do
   action        :grant
-  connection    root_connection_details
+  connection    Chef::Recipe::IngeneratorMysqlHelper.root_connection(node)
   database_name app_db_attributes['schema']
   host          app_db_attributes['connect_anywhere'] ? '%' : 'localhost'
   password      app_db_attributes['password']

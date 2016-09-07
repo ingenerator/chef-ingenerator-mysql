@@ -25,4 +25,17 @@ class Chef::Recipe::IngeneratorMysqlHelper
   def self.is_vagrant?(node)
     node['etc'] && node['etc']['passwd'] && node['etc']['passwd']['vagrant']
   end
+  
+  # Gets the current root account connection details
+  def self.root_connection(node)
+    unless node['mysql'] && node['mysql']['server_root_password']
+      raise ArgumentError.new('No root password defined in node.mysql.server_root_password')
+    end
+    
+    {
+      :host     => '127.0.0.1',
+      :username => 'root',
+      :password => node['mysql']['server_root_password'],
+    }
+  end
 end
