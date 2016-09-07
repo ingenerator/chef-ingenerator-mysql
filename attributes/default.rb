@@ -23,13 +23,8 @@
 # Define insecure root passwords for dev boxes. These MUST be upgraded to secure for production
 default['mysql']['server_root_password']   = 'mysql'
 
-# Define network and security related attributes for vagrant or non-vagrant runs
-if Chef::Recipe::IngeneratorMysqlHelper.is_vagrant? node
-  default['mysql']['bind_address'] = '0.0.0.0'
-else
-  # Define the bind port - default to localhost-only in production for security
-  default['mysql']['bind_address'] = '127.0.0.1'
-end
+# By default bind only to 127.0.0.1 - override for external access (or access over ssh forwarding)
+default['mysql']['bind_address'] = '127.0.0.1'
 
 # The mysql cookbook is built to provision multiple servers per instance and so places sockets
 # in non-standard places. By default, use the standard ubuntu socket path so that we don't have
