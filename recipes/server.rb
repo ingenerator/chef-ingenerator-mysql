@@ -39,6 +39,7 @@ if not_environment?(:localdev, :buildslave) && (node['mysql']['server_root_passw
   )
 end
 
+# Install and configure the mysql server
 mysql_service 'default' do
   action                [:create, :start]
   bind_address          node['mysql']['bind_address']
@@ -48,9 +49,13 @@ end
 
 include_recipe "ingenerator-mysql::custom_config"
 
-# Install the chef gem to allow chef to provision users and databases
+# Install the mysql client libraries and chef gem to allow chef to provision users and databases
+mysql_client_installation_package 'default'
+package 'libmysqlclient-dev'
+
 mysql2_chef_gem 'default' do
   action :install
 end
 
+# Provision application databases and users if required
 include_recipe "ingenerator-mysql::app_db_server"
