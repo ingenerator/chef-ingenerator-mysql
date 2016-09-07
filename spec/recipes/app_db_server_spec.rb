@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe 'ingenerator-mysql::app_db_server' do
   let (:chef_run) { ChefSpec::SoloRunner.new.converge(described_recipe) }
-  let (:root_connection) { {:host => 'localhost', :username => 'root', :password => chef_run.node['mysql']['server_root_password']} }
+  let (:root_connection) { {:host => '127.0.0.1', :username => 'root', :password => chef_run.node['mysql']['server_root_password']} }
   let (:default_app_privileges) { ["LOCK TABLES", "DELETE", "INSERT", "SELECT", "UPDATE", "EXECUTE"].sort }
 
   before (:each) do
