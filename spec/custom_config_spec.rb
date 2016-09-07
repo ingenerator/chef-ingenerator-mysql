@@ -53,8 +53,8 @@ describe 'ingenerator-mysql::custom_config' do
     }.to raise_error(ArgumentError)
   end
 
-  it "raises error if the node still defines old-style bind_address attributes" do
-    chef_run.node.normal['mysql']['bind_address'] = '0.0.0.0'
+  it "raises error if the node still defines bind_address as custom_config attributes" do
+    chef_run.node.normal['mysql']['custom_config']['bind_address'] = '0.0.0.0'
     expect { 
       chef_run.converge described_recipe 
     }.to raise_error(ArgumentError)

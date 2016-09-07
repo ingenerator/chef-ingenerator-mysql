@@ -21,22 +21,15 @@
 #
 
 # Define insecure root passwords for dev boxes. These MUST be upgraded to secure for production
-default['mysql']['server_debian_password'] = 'mysql'
 default['mysql']['server_root_password']   = 'mysql'
-default['mysql']['server_repl_password']   = 'mysql'
 
 # Define network and security related attributes for vagrant or non-vagrant runs
 if Chef::Recipe::IngeneratorMysqlHelper.is_vagrant? node
-  default['mysql']['custom_config']['bind-address'] = '0.0.0.0'
-  default['mysql']['allow_remote_root'] = true
+  default['mysql']['bind_address'] = '0.0.0.0'
 else
   # Define the bind port - default to localhost-only in production for security
-  default['mysql']['custom_config']['bind-address'] = '127.0.0.1'
-  default['mysql']['allow_remote_root'] = false
+  default['mysql']['bind_address'] = '127.0.0.1'
 end
-
-# Define security-related settings
-default['mysql']['remove_anonymous_users'] = true
 
 # Ensure that apt update runs at compile-time, to prevent issues with installing the mysql client 
 # (see https://github.com/opscode-cookbooks/apt/pull/75)

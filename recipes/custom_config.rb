@@ -25,8 +25,8 @@ if node['mysql']['tunable']
   raise ArgumentError, "node['mysql']['tunable'] is no longer supported - migrate the keys #{keys} to node['mysql]['custom_config']"
 end
 
-if node['mysql']['bind_address']
-  raise ArgumentError, "node['mysql']['bind_address'] is no longer supported - migrate to node['mysql]['custom_config']"
+if node['mysql']['custom_config'] && node['mysql']['custom_config']['bind_address']
+  raise ArgumentError, "node['mysql']['custom_config']['bind_address'] is no longer supported - migrate back to node['mysql]['bind_address']"
 end
 
 # Define the service for notification
