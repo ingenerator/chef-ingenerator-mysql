@@ -20,24 +20,14 @@
 # limitations under the License.
 #
 
-invalid_configs = []
-%w(server_debian_password server_repl_password allow_remote_root remove_anonymous_users).each do | key |
-  if node['mysql'].attribute?(key)
-    invalid_configs << key
-  end
-end
+raise_if_legacy_attributes(
+  'mysql.server_debian_password',
+  'mysql.server_repl_password',
+  'mysql.allow_remote_root',
+  'mysql.remove_anonymous_users'
+)
 
-unless invalid_configs.empty?
-  raise ArgumentError.new(
-    "Your environment defines legacy mysql config options that are no longer valid:\n"+invalid_configs.join(', ')
-  )
-end
-
-if not_environment?(:localdev, :buildslave) && (node['mysql']['server_root_password'] === 'mysql')
-  raise ArgumentError.new(
-    'You must define a custom value for node.mysql.server_root_password outside productiony environments'
-  )
-end
+raise_unless_customised('mysql.server_root_password') if not_environment?(:localdev, :buildslave)
 
 # Install and configure the mysql server
 mysql_service 'default' do

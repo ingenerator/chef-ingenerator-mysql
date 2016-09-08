@@ -1,117 +1,133 @@
 require 'spec_helper'
 
 describe 'ingenerator-mysql::app_db_server' do
-  let (:chef_run) { ChefSpec::SoloRunner.new.converge(described_recipe) }
-  let (:root_connection) { {:host => '127.0.0.1', :username => 'root', :password => chef_run.node['mysql']['server_root_password']} }
-  let (:default_app_privileges) { ["LOCK TABLES", "DELETE", "INSERT", "SELECT", "UPDATE", "EXECUTE"].sort }
+  let (:default_app_privileges) { sort }
+  let (:node_environment)       { :localdev }
+  let (:project_name)           { 'bookface' }
+  let (:root_connection)        { {:mocked_conn_details => 'are here'} }
+  let (:db_attrs)               { {} }
 
-  before (:each) do
-    allow(Chef::Log).to receive(:warn)
+  let (:chef_run) do
+    ChefSpec::SoloRunner.new do | node |
+      db_attrs.each do | key, value |
+        node.normal['project']['services']['db'][key] = value
+      end
+    end.converge described_recipe
   end
 
-  it "creates a database for the application" do
-    expect(chef_run).to create_mysql_database(chef_run.node['project']['services']['db']['schema']).with(
-      :connection => root_connection
-    )
+  before (:example) do
+    allow_any_instance_of(Chef::Node).to receive(:mysql_root_connection).and_return(root_connection)
+    allow_any_instance_of(Chef::Node).to receive(:ingenerator_project_name).and_return(project_name)
+    allow_any_instance_of(Chef::Node).to receive(:node_environment).and_return(node_environment)
+    allow_any_instance_of(Chef::Recipe).to receive(:node_environment).and_return(node_environment)
   end
 
-  it "creates the application database user" do
-    expect(chef_run).to grant_mysql_database_user(chef_run.node['project']['services']['db']['user']).with(
-      :password   => chef_run.node['project']['services']['db']['password'],
-      :connection => root_connection
-    )
-  end
+  context 'by default' do
+    it 'creates a database named for the application using root connection' do
+      expect(chef_run).to create_mysql_database(project_name).with(
+        :connection => root_connection
+      )
+    end
 
-  context "by default" do
-    it "allows the app user to connect from localhost only" do
-      expect(chef_run).to grant_mysql_database_user(chef_run.node['project']['services']['db']['user']).with(
+    it 'creates a database user named for the application using root connection' do
+      expect(chef_run).to grant_mysql_database_user(project_name).with(
+        :connection => root_connection
+      )
+    end
+
+    it 'only allows the app user to connect from localhost' do
+      expect(chef_run).to grant_mysql_database_user(project_name).with(
         :host  => 'localhost'
       )
     end
 
-    it "grants user-level privileges to the app user" do
-      expect(chef_run).to grant_mysql_database_user(chef_run.node['project']['services']['db']['user']).with(
-        :privileges => default_app_privileges
+    it 'grants user-level privileges on the application database to the application user' do
+      expect(chef_run).to grant_mysql_database_user(project_name).with(
+       :database_name => project_name,
+       :privileges    => ["DELETE", "EXECUTE", "INSERT", "LOCK TABLES", "SELECT", "UPDATE"]
       )
     end
 
-    it "only grants privileges on the application schema" do
-      expect(chef_run).to grant_mysql_database_user(chef_run.node['project']['services']['db']['user']).with(
-        :database_name => chef_run.node['project']['services']['db']['schema']
-      )
+    context 'in :localdev environment' do
+      let (:node_environment) { :localdev }
+
+      it 'sets the app user password to mysql-appuser' do
+        expect(chef_run).to grant_mysql_database_user(project_name).with(
+          :password => 'mysql-appuser'
+        )
+      end
+    end
+
+    context 'in :buildslave environment' do
+      let (:node_environment) { :buildslave }
+
+      it 'sets the app user password to mysql-appuser' do
+        expect(chef_run).to grant_mysql_database_user(project_name).with(
+          :password => 'mysql-appuser'
+        )
+      end
+    end
+
+    context 'in any other environment' do
+      let (:node_environment) { :'anything_productiony' }
+
+      context 'if the app user password is still default' do
+        it 'throws an exception' do
+          expect { chef_run }.to raise_exception Ingenerator::Helpers::Attributes::DefaultAttributeValueError
+        end
+      end
+
+      context 'with customised app user password' do
+        let (:db_attrs) { {'password' => 'mysecurepassword'} }
+
+        it 'assigns the custom root password' do
+          expect(chef_run).to grant_mysql_database_user(project_name).with(
+            :password => 'mysecurepassword'
+          )
+        end
+      end
     end
   end
 
-  context "with project.services.db.connect_anywhere set" do
-    let (:chef_run) do
-      ChefSpec::SoloRunner.new do |node|
-        node.normal['project']['services']['db']['connect_anywhere'] = true
-      end.converge(described_recipe)
+  context 'with custom configuration' do
+    context 'with connect_anywhere set' do
+      let (:db_attrs)               { { 'connect_anywhere' => true } }
+
+      it 'allows the app db user to connect from anywhere' do
+        expect(chef_run).to grant_mysql_database_user(chef_run.node['project']['services']['db']['user']).with(
+          :host  => '%'
+        )
+      end
     end
 
-    it "allows the app user to connect from any host" do
-      expect(chef_run).to grant_mysql_database_user(chef_run.node['project']['services']['db']['user']).with(
-        :host  => '%'
-      )
-    end
-  end
+    context 'with custom schema and user names' do
+      let (:db_attrs)  { {
+        'schema' => 'somedatabase',
+        'user'   => 'someuser'
+      } }
 
-  context "with extra permissions in project.services.db.privileges" do
-    let (:chef_run) do
-      ChefSpec::SoloRunner.new do |node|
-        node.normal['project']['services']['db']['privileges']['DROP'] = true
-      end.converge(described_recipe)
-    end
+      it 'creates the custom-named database' do
+        expect(chef_run).to create_mysql_database('somedatabase')
+      end
 
-    it "grants the app user the additional privileges" do
-      custom_privs = default_app_privileges
-      custom_privs << 'DROP'
-      expect(chef_run).to grant_mysql_database_user(chef_run.node['project']['services']['db']['user']).with(
-        :privileges  => custom_privs.sort
-      )
-    end
-  end
-
-  context "with permissions disabled in project.services.db.allowed_operations" do
-    let (:chef_run) do
-      ChefSpec::SoloRunner.new do |node|
-        node.normal['project']['services']['db']['privileges']['DELETE'] = false
-      end.converge(described_recipe)
+      it 'creates the custom-named user and grants access to custom schema' do
+        expect(chef_run).to grant_mysql_database_user('someuser').with(
+          :database_name => 'somedatabase'
+        )
+      end
     end
 
-    it "grants the app user the additional privileges" do
-      custom_privs = default_app_privileges
-      custom_privs.delete('DELETE')
-      expect(chef_run).to grant_mysql_database_user(chef_run.node['project']['services']['db']['user']).with(
-        :privileges  => custom_privs.sort
-      )
+    context 'with additional and disabled default privileges' do
+      let (:db_attrs) { {
+        :privileges => {'DROP' => true, 'DELETE' => false, 'UPDATE' => false}
+      } }
+
+      it 'only grants the expected privileges' do
+        expect(chef_run).to grant_mysql_database_user(project_name).with(
+         :database_name => project_name,
+         :privileges    => ["DROP", "EXECUTE", "INSERT", "LOCK TABLES", "SELECT"]
+        )
+      end
     end
   end
-
-  context "when running under vagrant" do
-    let (:chef_run) do
-      ChefSpec::SoloRunner.new do |node|
-        node.normal['vagrant'] = {}
-      end.converge(described_recipe)
-    end
-
-    it "does not emit a root password security warning" do
-      expect(Chef::Log).not_to receive(:warn).with(
-        'Your app db password is not secure and you are not running under vagrant - check your configuration'
-      )
-      chef_run.converge(described_recipe)
-    end
-
-  end
-
-  context "when not under vagrant" do
-    it "emits a warning if the root password is 'mysql'" do
-      expect(Chef::Log).to receive(:warn).at_least(:once).with(
-        'Your app db password is not secure and you are not running under vagrant - check your configuration'
-      )
-      chef_run.node.normal['mysql']['server_root_password'] = 'mysql'
-      chef_run.converge(described_recipe)
-    end
-  end
-
 end

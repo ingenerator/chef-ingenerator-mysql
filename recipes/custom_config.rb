@@ -19,16 +19,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-if node['mysql']['tunable']
-  keys = node['mysql']['tunable'].keys.join(", ")
-  raise ArgumentError, "node['mysql']['tunable'] is no longer supported - migrate the keys #{keys} to node['mysql]['custom_config']"
-end
-
-if node['mysql']['custom_config'] && node['mysql']['custom_config']['bind_address']
-  raise ArgumentError, "node['mysql']['custom_config']['bind_address'] is no longer supported - migrate back to node['mysql]['bind_address']"
-end
-
+raise_if_legacy_attributes(
+  'mysql.tunable',
+  'mysql.custom_config.bind_address'
+)
 
 # Options must be sorted in order, as Ruby doesn't guarantee hash order by default and so can cause
 # unexpected file changes

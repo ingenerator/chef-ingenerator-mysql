@@ -5,19 +5,16 @@ describe 'ingenerator-mysql::server' do
   let (:node_environment)  { :localdev }
   let (:chef_run) do
     ChefSpec::SoloRunner.new do | node |
-      node.normal['ingenerator']['node_environment'] = node_environment
       mysql_attrs.each do | key, value |
         node.normal['mysql'][key] = value
       end
+      node.normal['project']['services']['db']['password'] = 'custompass'
     end.converge described_recipe
   end
 
-  before do
-    # stub guards used by the included recipes
-    stub_command("\"/usr/bin/mysql\" -u root -e 'show databases;'").and_return(true)
-
-    # mysql cookbook adds a *lot* of warnings to the log
-    allow(Chef::Log).to receive(:warn)
+  before (:example) do
+    allow_any_instance_of(Chef::Node).to receive(:node_environment).and_return(node_environment)
+    allow_any_instance_of(Chef::Recipe).to receive(:node_environment).and_return(node_environment)
   end
 
   context 'with invalid legacy configuration' do
@@ -26,7 +23,7 @@ describe 'ingenerator-mysql::server' do
     %w(server_debian_password server_repl_password allow_remote_root remove_anonymous_users).each do | key |
       it "throws if a #{key} value is still defined in the mysql configuration" do
         chef_run.node.normal['mysql'][key] = 'anything'
-        expect { chef_run.converge described_recipe }.to raise_error(ArgumentError)
+        expect { chef_run.converge described_recipe }.to raise_error(Ingenerator::Helpers::Attributes::LegacyAttributeDefinitionError)
       end
     end
 
@@ -105,7 +102,7 @@ describe 'ingenerator-mysql::server' do
         it 'throws exception' do
           expect {
             chef_run
-          }.to raise_exception(ArgumentError)
+          }.to raise_exception(Ingenerator::Helpers::Attributes::DefaultAttributeValueError)
         end
       end
 

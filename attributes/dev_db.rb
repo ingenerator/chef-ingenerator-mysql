@@ -22,7 +22,7 @@
 #
 
 # Whether to always recreate the development db - if not will only be recreated if the SQL files change
-if ENV.fetch('RECREATE_DEV_DB', false)
+if ENV.fetch('RECREATE_DEV_DB', false) || is_environment?(:buildslave)
   default['mysql']['dev_db']['recreate_always'] = true
 else
   default['mysql']['dev_db']['recreate_always'] = false
