@@ -5,6 +5,21 @@ This project adheres to [Semantic Versioning](http://semver.org/). Note that
 
 ## Unreleased
 
+## 0.2.0 (2016-09-09)
+
+* [BREAKING] Updated to new mysql and database cookbooks - this will break lots
+  of things. Ensure you deploy this to a clean instance, not over the top of
+  provisioning delivered by a previous version of the cookbook.
+* [BREAKING] Now throws exceptions if using insecure default passwords outside
+  a :localdev or :buildslave environment.
+* [BREAKING] No longer listens on 0.0.0.0 on development boxes by default, use
+  ssh forwarding.
+* [BREAKING] No longer supports the out-of-box debian-sys-maint or replication
+  users - provision them separately if required.
+* [FEATURE] Provides a `node.mysql_root_connection()` method that returns a hash
+  with everything you need to connect as root. Note that the keys are symbols,
+  not strings.
+
 ## 0.1.0 (2016-09-06)
 
 * First tagged release
