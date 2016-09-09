@@ -24,10 +24,9 @@
 
 # Credentials that are used to create the application db user and manage app config files
 # At least the password needs to be overridden to something secure in a production environment
-project_name = (node['project'] && node['project']['name']) || 'ingenerator'
-default['project']['services']['db']['schema']           = project_name
-default['project']['services']['db']['user']             = project_name
-default['project']['services']['db']['password']         = project_name
+default['project']['services']['db']['schema']           = node.ingenerator_project_name()
+default['project']['services']['db']['user']             = node.ingenerator_project_name()
+default['project']['services']['db']['password']         = 'mysql-appuser'
 
 # If set, the application database user can connect from anywhere
 default['project']['services']['db']['connect_anywhere'] = false

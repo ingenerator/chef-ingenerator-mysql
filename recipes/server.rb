@@ -20,8 +20,32 @@
 # limitations under the License.
 #
 
-include_recipe "mysql::server"
+raise_if_legacy_attributes(
+  'mysql.server_debian_password',
+  'mysql.server_repl_password',
+  'mysql.allow_remote_root',
+  'mysql.remove_anonymous_users'
+)
+
+raise_unless_customised('mysql.server_root_password') if not_environment?(:localdev, :buildslave)
+
+# Install and configure the mysql server
+mysql_service 'default' do
+  action                [:create, :start]
+  bind_address          node['mysql']['bind_address']
+  initial_root_password node['mysql']['server_root_password']
+  socket                node['mysql']['default_server_socket']
+end
+
 include_recipe "ingenerator-mysql::custom_config"
-include_recipe "database::mysql"
-include_recipe "ingenerator-mysql::root_user"
+
+# Install the mysql client libraries and chef gem to allow chef to provision users and databases
+mysql_client_installation_package 'default'
+package 'libmysqlclient-dev'
+
+mysql2_chef_gem 'default' do
+  action :install
+end
+
+# Provision application databases and users if required
 include_recipe "ingenerator-mysql::app_db_server"
