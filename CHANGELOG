@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/). Note that
 
 ## Unreleased
 
+* Updated to the 6.x series database cookbook
+
 ## 0.2.0 (2016-09-09)
 
 * [BREAKING] Updated to new mysql and database cookbooks - this will break lots
