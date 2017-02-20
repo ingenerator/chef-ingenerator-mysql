@@ -39,6 +39,9 @@ end
 
 include_recipe "ingenerator-mysql::custom_config"
 
+# Fix logrotation for the default server
+include_recipe 'ingenerator-mysql::fix_logrotate'
+
 # Install the mysql client libraries and chef gem to allow chef to provision users and databases
 mysql_client_installation_package 'default'
 package 'libmysqlclient-dev'

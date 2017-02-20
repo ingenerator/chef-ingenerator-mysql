@@ -75,6 +75,10 @@ describe 'ingenerator-mysql::server' do
       expect(chef_run).to include_recipe "ingenerator-mysql::app_db_server"
     end
 
+    it 'fixed mysql logrotation via the ingenerator-mysql::fix_logrotate recipe' do
+      expect(chef_run).to include_recipe "ingenerator-mysql::fix_logrotate"
+    end
+
     context 'in :localdev environment' do
       let (:node_environment) { :localdev }
 
