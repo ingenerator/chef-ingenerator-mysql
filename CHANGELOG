@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/). Note that
 
 ## Unreleased
 
+* [BREAKING FEATURE] Add mysql_default_timezone resource and provision by
+  default to Europe/London - customise with the node.mysql.default-time-zone
+  attribute. Throws a LegacyAttributeDefinitionError if there's a default-time-zone
+  attribute in the custom_config definition.
 * [FEATURE] Add user_mysql_config resource and provision a default .my.cnf for
   root at /root/.my.cnf when installing a mysql server
 * Updated to the 6.0 series apt cookbook

@@ -21,8 +21,14 @@
 #
 raise_if_legacy_attributes(
   'mysql.tunable',
-  'mysql.custom_config.bind_address'
+  'mysql.custom_config.bind_address',
+  'mysql.custom_config.default-time-zone'
 )
+
+# Ensure the mysql_service resource is defined for notification
+find_resource(:mysql_service, 'default') do
+  action :nothing
+end
 
 # Options must be sorted in order, as Ruby doesn't guarantee hash order by default and so can cause
 # unexpected file changes
@@ -41,4 +47,9 @@ mysql_config 'custom' do
   variables(
     :options => options
   )
+end
+
+# Configure the database timezone
+mysql_default_timezone node['mysql']['default-time-zone'] do
+  notifies   :restart, 'mysql_service[default]', :immediately
 end

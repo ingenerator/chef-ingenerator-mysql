@@ -145,6 +145,16 @@ user_mysql_config '/home/me/.my.cnf' do
 end
 ```
 
+### mysql_default_timezone
+
+Uses `mysql_tzinfo_to_sql` to populate mysql timezones from `/usr/share/zoneinfo`
+then sets a custom configuration file for the default timezone. See the
+custom_config recipe for usage details. The default timezone is Europe/London -
+override this with the node.mysql.default-time-zone attribute if required.
+
+[!!] Note that this does not schedule any future updates of the timezone data -
+if you're not routinely building fresh boxes you will need to schedule this.
+
 ### Testing
 See the [.travis.yml](.travis.yml) file for the current test scripts.
 

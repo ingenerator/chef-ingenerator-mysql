@@ -31,6 +31,10 @@ default['mysql']['bind_address'] = '127.0.0.1'
 # to reconfigure all the various places that might attempt to connect to the instance.
 default['mysql']['default_server_socket'] = '/var/run/mysqld/mysqld.sock'
 
-# Ensure that apt update runs at compile-time, to prevent issues with installing the mysql client 
+# Ensure that apt update runs at compile-time, to prevent issues with installing the mysql client
 # (see https://github.com/opscode-cookbooks/apt/pull/75)
 default['apt']['compile_time_update'] = true
+
+# Configure as required - this should usually be the same as the default tz used
+# in your application
+default['mysql']['default-time-zone'] = 'Europe/London'

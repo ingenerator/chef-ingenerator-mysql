@@ -37,6 +37,14 @@ mysql_service 'default' do
   socket                node['mysql']['default_server_socket']
 end
 
+# Provision a root mysql client config file with credentials
+# This has to come immediately after the service definition as it is used
+# by the custom_config resource to load timezones
+user_mysql_config '/root/.my.cnf' do
+  connection      node.mysql_root_connection()
+  default_charset 'utf8'
+end
+
 include_recipe "ingenerator-mysql::custom_config"
 
 # Fix logrotation for the default server
@@ -48,12 +56,6 @@ package 'libmysqlclient-dev'
 
 mysql2_chef_gem 'default' do
   action :install
-end
-
-# Provision a root mysql client config file with credentials
-user_mysql_config '/root/.my.cnf' do
-  connection      node.mysql_root_connection()
-  default_charset 'utf8'
 end
 
 # Provision application databases and users if required
