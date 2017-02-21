@@ -47,6 +47,7 @@ This recipe will:
 * install a mysql server
 * manage the mysql root password
 * install the mysql client, ruby mysql gem and database bindings for use in chef
+* provision a default mysql client options file at /root/.my.cnf with credentials for root database access
 * create a schema for the application
 * create a non-root user account for the application - by default only with permissions on the app schema
 * if running on vagrant, bind mysql to any interface and allow remote root access so workbench etc work from the host
@@ -118,6 +119,31 @@ The cookbook provides and is controlled by a number of default attributes:
 
 * [default](attributes/default.rb) - customisation of mysql config and generic mysql attributes
 * [app_db](attributes/app_db.rb) - attributes related to the application database, including tweaks to related cookbooks
+
+
+Resources
+---------
+
+### user_mysql_config
+
+Provisions a `.my.cnf` options file for the mysql client with the specified connection
+details. Optionally, you can enforce safe queries, a default character set and a default
+database.
+
+```ruby
+user_mysql_config '/home/me/.my.cnf' do
+  user            'me'
+  mode            0600
+  connection      { username: 'me', password: 'secret', host: '127.0.0.1'}
+  # or use node.mysql_root_connection() for the current root credentials
+  database        'my-schema'
+
+  # enforce the safe-updates mode of mysql where a PK is required to update or delete
+  safe_updates    true
+
+  default_charset 'utf8'
+end
+```
 
 ### Testing
 See the [.travis.yml](.travis.yml) file for the current test scripts.

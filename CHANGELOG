@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/). Note that
 
 ## Unreleased
 
+* [FEATURE] Add user_mysql_config resource and provision a default .my.cnf for
+  root at /root/.my.cnf when installing a mysql server
 * Updated to the 6.0 series apt cookbook
 * [BUGFIX] Add a workaround to fix the default mysql logrotate config that no
   longer works per chef-cookbooks/mysql#294 due to the multi-instance setup.

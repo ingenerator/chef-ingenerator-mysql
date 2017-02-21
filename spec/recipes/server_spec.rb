@@ -3,6 +3,7 @@ require 'spec_helper'
 describe 'ingenerator-mysql::server' do
   let (:mysql_attrs)       { {} }
   let (:node_environment)  { :localdev }
+  let (:root_connection)   { { username: 'rooty', password: 'whatever', host: '127.0.0.1' } }
   let (:chef_run) do
     ChefSpec::SoloRunner.new do | node |
       mysql_attrs.each do | key, value |
@@ -13,6 +14,7 @@ describe 'ingenerator-mysql::server' do
   end
 
   before (:example) do
+    allow_any_instance_of(Chef::Node).to receive(:mysql_root_connection).and_return(root_connection)
     allow_any_instance_of(Chef::Node).to receive(:node_environment).and_return(node_environment)
     allow_any_instance_of(Chef::Recipe).to receive(:node_environment).and_return(node_environment)
   end
@@ -77,6 +79,16 @@ describe 'ingenerator-mysql::server' do
 
     it 'fixed mysql logrotation via the ingenerator-mysql::fix_logrotate recipe' do
       expect(chef_run).to include_recipe "ingenerator-mysql::fix_logrotate"
+    end
+
+    it 'provisions a mysql user config at /root/.my.cnf with the root credentials' do
+      expect(chef_run).to create_user_mysql_config('/root/.my.cnf').with(
+        user:            'root',
+        mode:            0600,
+        connection:      root_connection,
+        safe_updates:    false,
+        default_charset: 'utf8'
+      )
     end
 
     context 'in :localdev environment' do

@@ -50,5 +50,11 @@ mysql2_chef_gem 'default' do
   action :install
 end
 
+# Provision a root mysql client config file with credentials
+user_mysql_config '/root/.my.cnf' do
+  connection      node.mysql_root_connection()
+  default_charset 'utf8'
+end
+
 # Provision application databases and users if required
 include_recipe "ingenerator-mysql::app_db_server"
