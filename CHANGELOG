@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/). Note that
 
 ## Unreleased
 
+* [BREAKING FEATURE] Move app_db_server logic into an application_database
+  resource to allow simpler reuse on projects with multiple schemas on a single
+  instance. Also added the ability to seed a new database - eg when moving to
+  a new instance - by dropping a sql file in /tmp/database-seeds.
 * [FEATURE] Add mysql_local_admin to provision database access (user and client
   config) for system users that should have access to the db.
 * [BREAKING FEATURE] Add mysql_default_timezone resource and provision by

@@ -54,22 +54,8 @@ This recipe will:
 
 ### `ingenerator-mysql::app_db_server`
 This is intended to be run on the database server instance for an application (and is included with
-the standard `ingenerator-mysql::server` recipe above). It handles two main tasks:
-
-* create a schema for the application - named with the project name by default
-* create a restricted-privilege database user for use by general application code - again with the project name by default
-
-The application database user, by default, can only connect from localhost but you can configure this by setting the
-`node['project']['services']['db']['connect_anywhere']` attribute to true. It has limited permissions which can be
-customised by setting the appropriate key in `node['project']['services']['db']['privileges'][{mysql permission name}]`
-to true.
-
-> **Security Considerations!**
-> Granting granting elevated privileges to a user that runs in the context of a web application is a likely security
-> hole. Before activating additional privileges for the application user you should consider whether you can either
-> use a separate database user (for example, for command line admin tasks that run outside the web context) or implement
-> a message queue or similar so that the web process can only trigger a set of whitelisted application use cases which
-> executed by a privileged user in a separate process.
+the standard `ingenerator-mysql::server` recipe above). It provisions an `application_database`
+resource for the default primary schema defined in `node['project']['services']['db']['schema']`.
 
 ### `ingenerator-mysql::dev-db`
 This recipe will:
@@ -150,6 +136,38 @@ The cookbook provides and is controlled by a number of default attributes:
 
 Resources
 ---------
+
+### application_database
+
+This resource will:
+
+* create a schema for the application to use
+* create / update a restricted-privilege database user for use by general
+  application code - named with the project name by default
+* optionally, if the database is empty, seed it from a file in /tmp/database-seeds/{schema.sql}
+
+If a database seed file is provided, it will be piped to the schema and then
+deleted. If it is present on a subsequent run and the database is not empty,
+an exception will be thrown and provisioning aborted.
+
+The resouce currently has limited direct options, most behaviour is governed by the
+`node['project']['services']['db']` attributes.
+
+The application database user, by default, can only connect from localhost but
+you can configure this by setting the
+`node['project']['services']['db']['connect_anywhere']` attribute to true. It
+has limited permissions which can be customised by setting the appropriate key
+in `node['project']['services']['db']['privileges'][{mysql permission name}]`
+to true.
+
+> **Security Considerations!**
+> Granting granting elevated privileges to a user that runs in the context of a web
+> application is a likely security hole. Before activating additional privileges for
+> the application user you should consider whether you can either use a separate
+> database user (for example, for command line admin tasks that run outside the web
+> context) or implement a message queue or similar so that the web process can only
+> trigger a set of whitelisted application use cases which are executed by a
+> privileged user in a separate process.
 
 ### user_mysql_config
 
