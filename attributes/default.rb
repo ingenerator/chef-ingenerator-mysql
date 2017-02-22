@@ -21,7 +21,7 @@
 #
 
 # Define insecure root passwords for dev boxes. These MUST be upgraded to secure for production
-default['mysql']['server_root_password']   = 'mysql'
+default['mysql']['server_root_password'] = 'mysql'
 
 # By default bind only to 127.0.0.1 - override for external access (or access over ssh forwarding)
 default['mysql']['bind_address'] = '127.0.0.1'

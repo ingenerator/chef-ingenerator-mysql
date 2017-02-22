@@ -41,11 +41,11 @@ end
 # This has to come immediately after the service definition as it is used
 # by the custom_config resource to load timezones
 user_mysql_config '/root/.my.cnf' do
-  connection      node.mysql_root_connection()
+  connection      node.mysql_root_connection
   default_charset 'utf8'
 end
 
-include_recipe "ingenerator-mysql::custom_config"
+include_recipe 'ingenerator-mysql::custom_config'
 
 # Fix logrotation for the default server
 include_recipe 'ingenerator-mysql::fix_logrotate'
@@ -59,4 +59,4 @@ mysql2_chef_gem 'default' do
 end
 
 # Provision application databases and users if required
-include_recipe "ingenerator-mysql::app_db_server"
+include_recipe 'ingenerator-mysql::app_db_server'

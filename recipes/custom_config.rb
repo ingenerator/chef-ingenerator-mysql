@@ -34,10 +34,8 @@ end
 # unexpected file changes
 options = []
 if node['mysql']['custom_config']
-  node['mysql']['custom_config'].sort.each do | key, value |
-    unless value.nil?
-      options << {key: key, value: value}
-    end
+  node['mysql']['custom_config'].sort.each do |key, value|
+    options << { key: key, value: value } unless value.nil?
   end
 end
 
@@ -45,11 +43,11 @@ mysql_config 'custom' do
   instance 'default'
   source   'custom.cnf.erb'
   variables(
-    :options => options
+    options: options
   )
 end
 
 # Configure the database timezone
 mysql_default_timezone node['mysql']['default-time-zone'] do
-  notifies   :restart, 'mysql_service[default]', :immediately
+  notifies :restart, 'mysql_service[default]', :immediately
 end

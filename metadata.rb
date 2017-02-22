@@ -12,8 +12,8 @@ version '0.2.0'
   supports os
 end
 
-depends "apt", "~> 6.0"
+depends 'apt', '~> 6.0'
 depends 'database', '~> 6.0'
 depends 'ingenerator-helpers', '~> 1.0'
-depends "mysql", "~> 8.0"
+depends 'mysql', '~> 8.0'
 depends 'mysql2_chef_gem', '~> 1.0'

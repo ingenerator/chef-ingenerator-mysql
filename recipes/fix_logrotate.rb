@@ -22,14 +22,14 @@ rotate_password = 'logrotate'
 
 mysql_database_user rotate_user do
   action     :grant
-  connection node.mysql_root_connection()
+  connection node.mysql_root_connection
   password   rotate_password
-  privileges ['USAGE', 'RELOAD']
+  privileges %w(USAGE RELOAD)
 end
 
 template '/etc/logrotate.d/mysql-server' do
   source 'logrotate-mysql-server.erb'
-  mode   0644
+  mode   0o644
   variables(
     user:     rotate_user,
     password: rotate_password,
@@ -38,7 +38,7 @@ template '/etc/logrotate.d/mysql-server' do
       '/var/log/mysql.log',
       '/var/log/mysql-default/mysql.log',
       '/var/log/mysql-default/mysql-slow.log',
-      '/var/log/mysql-default/error.log',
+      '/var/log/mysql-default/error.log'
     ]
   )
 end

@@ -34,9 +34,7 @@ action :configure do
 end
 
 action_class do
-
   def mysql_client_cmd
     "mysql --defaults-extra-file=#{credential_file} --database=mysql"
   end
-
 end

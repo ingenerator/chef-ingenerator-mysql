@@ -7,7 +7,7 @@ describe 'ingenerator-mysql::dev_db' do
   let (:sql_files)        { {} }
 
   let (:chef_run) do
-    ChefSpec::SoloRunner.new do | node |
+    ChefSpec::SoloRunner.new do |node|
       node.normal['mysql']['server_root_password']      = root_password unless root_password.nil?
       node.normal['mysql']['dev_db']['recreate_always'] = recreate_always unless recreate_always.nil?
       node.normal['mysql']['dev_db']['sql_files']       = sql_files
@@ -28,21 +28,21 @@ describe 'ingenerator-mysql::dev_db' do
   end
 
   context 'when configured with cookbook file sql filenames' do
-    let (:sql_files)         { {'mycookbook::dev_db/table.sql' => true} }
+    let (:sql_files)         { { 'mycookbook::dev_db/table.sql' => true } }
     let (:local_schema_path) { chef_run.node['mysql']['dev_db']['schema_path'] }
-    let (:local_file_path)   { local_schema_path+'/dev_db/table.sql' }
+    let (:local_file_path)   { local_schema_path + '/dev_db/table.sql' }
     let (:mysql_command)     { "cat #{local_schema_path}/dev_db/table.sql | mysql -uroot -p#{chef_run.node['mysql']['server_root_password']}" }
 
     it 'ensures the parent directory exists' do
-      expect(chef_run).to create_directory(local_schema_path+'/dev_db').with(
-        :recursive  => true
+      expect(chef_run).to create_directory(local_schema_path + '/dev_db').with(
+        recursive: true
       )
     end
 
     it 'copies the sql files from the right cookbooks to the local path' do
       expect(chef_run).to create_cookbook_file(local_file_path).with(
-        :cookbook => 'mycookbook',
-        :source   => 'dev_db/table.sql'
+        cookbook: 'mycookbook',
+        source: 'dev_db/table.sql'
       )
     end
 
@@ -86,7 +86,7 @@ describe 'ingenerator-mysql::dev_db' do
 
       it 'notifies the provisioning script to run if the file has changed' do
         cookbook_file = chef_run.find_resource(:cookbook_file, local_file_path)
-        expect(cookbook_file).to notify('execute['+mysql_command+']').to(:run).immediately
+        expect(cookbook_file).to notify('execute[' + mysql_command + ']').to(:run).immediately
       end
     end
 
@@ -99,13 +99,13 @@ describe 'ingenerator-mysql::dev_db' do
 
       it 'does not define a notification on the cookbook file' do
         cookbook_file = chef_run.find_resource(:cookbook_file, local_file_path)
-        expect(cookbook_file).not_to notify('execute['+mysql_command+']').to(:run)
+        expect(cookbook_file).not_to notify('execute[' + mysql_command + ']').to(:run)
       end
     end
   end
 
   context 'when files have been disabled by attributes elsewhere' do
-    let (:sql_files)         { {'mycookbook::dev_db/table.sql' => false} }
+    let (:sql_files) { { 'mycookbook::dev_db/table.sql' => false } }
 
     it 'does not create any directories' do
       expect(chef_run.find_resources(:directory)).to be_empty

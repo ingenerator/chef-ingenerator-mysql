@@ -28,13 +28,13 @@ raise_unless_customised('project.services.db.password') if not_environment?(:loc
 # Create the application database
 mysql_database app_db_attributes['schema'] do
   action      :create
-  connection  node.mysql_root_connection()
+  connection  node.mysql_root_connection
 end
 
 # Create the standard application database user with the configured privileges
 mysql_database_user app_db_attributes['user'] do
   action        :grant
-  connection    node.mysql_root_connection()
+  connection    node.mysql_root_connection
   database_name app_db_attributes['schema']
   host          app_db_attributes['connect_anywhere'] ? '%' : 'localhost'
   password      app_db_attributes['password']
