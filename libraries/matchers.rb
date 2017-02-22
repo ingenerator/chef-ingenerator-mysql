@@ -6,6 +6,10 @@ if defined?(ChefSpec)
     ChefSpec::Matchers::ResourceMatcher.new(:mysql_default_timezone, :configure, resource_name)
   end
 
+  def create_mysql_local_admin(resource_name)
+    ChefSpec::Matchers::ResourceMatcher.new(:mysql_local_admin, :create, resource_name)
+  end
+
   def create_user_mysql_config(resource_name)
     ChefSpec::Matchers::ResourceMatcher.new(:user_mysql_config, :create, resource_name)
   end

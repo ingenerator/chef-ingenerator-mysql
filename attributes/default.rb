@@ -38,3 +38,9 @@ default['apt']['compile_time_update'] = true
 # Configure as required - this should usually be the same as the default tz used
 # in your application
 default['mysql']['default-time-zone'] = 'Europe/London'
+
+# On a local development box, provision rooty access for the vagrant user by default
+if is_environment?(:localdev)
+  default['mysql']['local_admins']['vagrant']['create'] = true
+  default['mysql']['local_admins']['vagrant']['privileges'] = [:all]
+end

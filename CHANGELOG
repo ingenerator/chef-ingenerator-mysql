@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/). Note that
 
 ## Unreleased
 
+* [FEATURE] Add mysql_local_admin to provision database access (user and client
+  config) for system users that should have access to the db.
 * [BREAKING FEATURE] Add mysql_default_timezone resource and provision by
   default to Europe/London - customise with the node.mysql.default-time-zone
   attribute. Throws a LegacyAttributeDefinitionError if there's a default-time-zone

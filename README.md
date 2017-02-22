@@ -112,6 +112,33 @@ allow the same workflow on your host machine.
 > root password is anything other than "mysql". It should be obvious that inclusion of this recipe
 > should be treated with care.
 
+## `ingenerator-mysql::local_admins`
+
+This recipe is not included by default. If included it will generate a `mysql_local_admin` for
+each user defined in the `node['mysql']['local_admins']` hash of `username => options`.
+Users are only created if they have a `create` attribute set to true. Use this when you
+want to define system users before mysql is installed but keep their access definition
+in one place.
+
+If run in the `:localdev` environment then by default this will also create a user with
+root privileges for the `vagrant` local system user.
+
+For example:
+
+```ruby
+# your/project/cookbook/recipes/users.rb
+user 'phil'
+sudo 'phil'
+
+node.default['mysql']['local_admins']['phil']['create'] = true
+# Optionally, you can also set a custom default_database and privileges in these
+# attributes.
+
+# And then add ingenerator-mysql::local_admins to your runlist somewhere after
+# mysql is installed and configured.
+```
+
+
 Attributes
 ----------
 
@@ -154,6 +181,19 @@ override this with the node.mysql.default-time-zone attribute if required.
 
 [!!] Note that this does not schedule any future updates of the timezone data -
 if you're not routinely building fresh boxes you will need to schedule this.
+
+### mysql_local_admin
+
+Provisions a database user for a system user, and drops a `.my.cnf` in the user's
+home directory. By default users can do most data manipulation but not modify the
+schema. You can customise the privileges by passing your own array to the resource.
+
+The user password will come from:
+
+* A `password` option passed to the resource
+* A `node['mysql']['local_admins'][username]['password']` attribute
+* A random secure password that will be persisted into the above node attribute
+  for reuse.
 
 ### Testing
 See the [.travis.yml](.travis.yml) file for the current test scripts.
