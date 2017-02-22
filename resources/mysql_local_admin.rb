@@ -32,10 +32,12 @@ property :default_database, String
 # all databases and tables
 property :privileges, Array, required: true, default: Ingenerator::Mysql::DEFAULT_ADMIN_PRIVS
 
+default_action :create
+
 action :create do
   mysql_database_user new_resource.user do
     action     [:create, :grant]
-    connection node.mysql_root_connection
+    connection node.mysql_root_connection()
     password   user_password
     host       '127.0.0.1'
     privileges new_resource.privileges

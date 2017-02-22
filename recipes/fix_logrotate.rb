@@ -22,7 +22,7 @@ rotate_password = 'logrotate'
 
 mysql_database_user rotate_user do
   action     :grant
-  connection node.mysql_root_connection
+  connection node.mysql_root_connection()
   password   rotate_password
   privileges %w(USAGE RELOAD)
 end

@@ -21,7 +21,7 @@
 #
 
 # Protect against running on a live instance
-root_connection = node.mysql_root_connection
+root_connection = node.mysql_root_connection()
 unless root_connection[:password] == 'mysql'
   raise "It looks unsafe to run the ingenerator-mysql::dev_db recipe on this database server\n"\
         "The root password has been changed from mysql, which suggests this might not be a \n"\

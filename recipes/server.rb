@@ -41,7 +41,7 @@ end
 # This has to come immediately after the service definition as it is used
 # by the custom_config resource to load timezones
 user_mysql_config '/root/.my.cnf' do
-  connection      node.mysql_root_connection
+  connection      node.mysql_root_connection()
   default_charset 'utf8'
 end
 
