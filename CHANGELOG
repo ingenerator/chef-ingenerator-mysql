@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/). Note that
 
 ## Unreleased
 
+## 0.3.0 (2017-02-23)
+
 * Remove explicit install of libmysqlclient-dev - this was a workaround for
   https://github.com/chef-cookbooks/mysql/issues/457 which is now fixed. Bump
   minimum mysql cookbook version to 8.2.0 to ensure that fix is present.
