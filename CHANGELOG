@@ -5,6 +5,9 @@ This project adheres to [Semantic Versioning](http://semver.org/). Note that
 
 ## Unreleased
 
+* Remove explicit install of libmysqlclient-dev - this was a workaround for
+  https://github.com/chef-cookbooks/mysql/issues/457 which is now fixed. Bump
+  minimum mysql cookbook version to 8.2.0 to ensure that fix is present.
 * [BREAKING FEATURE] Move app_db_server logic into an application_database
   resource to allow simpler reuse on projects with multiple schemas on a single
   instance. Also added the ability to seed a new database - eg when moving to

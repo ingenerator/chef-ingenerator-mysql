@@ -52,11 +52,7 @@ include_recipe 'ingenerator-mysql::fix_logrotate'
 
 # Install the mysql client libraries and chef gem to allow chef to provision users and databases
 mysql_client_installation_package 'default'
-package 'libmysqlclient-dev'
-
-mysql2_chef_gem 'default' do
-  action :install
-end
+mysql2_chef_gem 'default'
 
 # Provision application databases and users if required
 include_recipe 'ingenerator-mysql::app_db_server'
