@@ -1,0 +1,34 @@
+# This custom config is provisioned by chef and should not be edited manually
+#
+# It handles the non-standard way that chef provisions config and similar for
+# a mysql-default instance on a node.
+<%=@log_files.sort.join(' ') %> {
+        daily
+        rotate 7
+        missingok
+        create 640 mysql adm
+        compress
+        sharedscripts
+        postrotate
+           # These credentials only allow flush logs, and only from localhost
+           CMD="/usr/bin/mysqladmin -u<%=@user %> -p<%=@password %> --socket=<%=@socket %> flush-logs"
+           SYSLOG="/usr/bin/logger -t mysql.logrotate"
+           LOGFILE=$(mktemp /tmp/mysql-post-logrotate.XXXXXXX)
+
+           # Run the command and capture all output including stderr
+           $CMD > "$LOGFILE" 2>&1
+           EXIT=$?
+
+           # send any output to syslog in case there is no MTA attached to cron
+           # so that we always get notified of the problem
+           cat $LOGFILE | $SYSLOG -p cron.err
+
+           if [ $EXIT -ne 0 ]; then
+             $SYSLOG -p cron.err "mysql postrotate failed with code $EXIT"
+           else
+             $SYSLOG -p cron.info "Successfully rotated logs"
+           fi
+
+           rm $LOGFILE
+        endscript
+}

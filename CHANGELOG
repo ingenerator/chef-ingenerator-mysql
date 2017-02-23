@@ -5,6 +5,29 @@ This project adheres to [Semantic Versioning](http://semver.org/). Note that
 
 ## Unreleased
 
+## 0.3.0 (2017-02-23)
+
+* Remove explicit install of libmysqlclient-dev - this was a workaround for
+  https://github.com/chef-cookbooks/mysql/issues/457 which is now fixed. Bump
+  minimum mysql cookbook version to 8.2.0 to ensure that fix is present.
+* [BREAKING FEATURE] Move app_db_server logic into an application_database
+  resource to allow simpler reuse on projects with multiple schemas on a single
+  instance. Also added the ability to seed a new database - eg when moving to
+  a new instance - by dropping a sql file in /tmp/database-seeds.
+* [FEATURE] Add mysql_local_admin to provision database access (user and client
+  config) for system users that should have access to the db.
+* [BREAKING FEATURE] Add mysql_default_timezone resource and provision by
+  default to Europe/London - customise with the node.mysql.default-time-zone
+  attribute. Throws a LegacyAttributeDefinitionError if there's a default-time-zone
+  attribute in the custom_config definition.
+* [FEATURE] Add user_mysql_config resource and provision a default .my.cnf for
+  root at /root/.my.cnf when installing a mysql server
+* Updated to the 6.0 series apt cookbook
+* [BUGFIX] Add a workaround to fix the default mysql logrotate config that no
+  longer works per chef-cookbooks/mysql#294 due to the multi-instance setup.
+  Solution inspired by https://github.com/flatrocks/cookbook-mysql_logrotate.
+* Updated to the 6.x series database cookbook
+
 ## 0.2.0 (2016-09-09)
 
 * [BREAKING] Updated to new mysql and database cookbooks - this will break lots

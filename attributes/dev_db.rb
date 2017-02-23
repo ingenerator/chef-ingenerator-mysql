@@ -34,4 +34,3 @@ default['mysql']['dev_db']['schema_path'] = '/var/mysql/mysql_dev_schema'
 # SQL files to provision - scoped with a cookbook name like a recipe eg
 # default['mysql']['dev_db']['sql_files']['application::dev_db/table.sql'] = true
 default['mysql']['dev_db']['sql_files'] = {}
-

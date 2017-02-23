@@ -35,16 +35,14 @@ default['project']['services']['db']['connect_anywhere'] = false
 # All available privileges are in the hash, first set to false and then the required privs are true
 # Assign an override value to remove or grant different privileges for your app - but consider
 # whether you should instead be running privileged db code in a non-web process on its own user
-['CREATE', 'DROP', 'LOCK TABLES', 'EVENT', 'ALTER', 'DELETE', 'INDEX', 'INSERT' , 'SELECT',
+['CREATE', 'DROP', 'LOCK TABLES', 'EVENT', 'ALTER', 'DELETE', 'INDEX', 'INSERT', 'SELECT',
  'UPDATE', 'CREATE TEMPORARY TABLES', 'TRIGGER', 'CREATE VIEW', 'SHOW VIEW', 'ALTER ROUTINE',
  'CREATE ROUTINE', 'EXECUTE', 'FILE', 'CREATE TABLESPACE', 'CREATE USER', 'PROCESS', 'PROXIES',
- 'RELOAD', 'REPLICATION CLIENT', 'REPLICATION SLAVE', 'SHOW DATABASES', 'SHUTDOWN', 'SUPER'
-].each do |privilege|
+ 'RELOAD', 'REPLICATION CLIENT', 'REPLICATION SLAVE', 'SHOW DATABASES', 'SHUTDOWN', 'SUPER'].each do |privilege|
   default['project']['services']['db']['privileges'][privilege] = false
 end
 
-["LOCK TABLES", "DELETE", "INSERT", "SELECT", "UPDATE", "EXECUTE"
-].each do |privilege|
+['LOCK TABLES', 'DELETE', 'INSERT', 'SELECT', 'UPDATE', 'EXECUTE'].each do |privilege|
   default['project']['services']['db']['privileges'][privilege] = true
 end
 

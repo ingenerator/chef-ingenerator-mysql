@@ -37,15 +37,24 @@ mysql_service 'default' do
   socket                node['mysql']['default_server_socket']
 end
 
-include_recipe "ingenerator-mysql::custom_config"
-
-# Install the mysql client libraries and chef gem to allow chef to provision users and databases
+# Install the mysql client libraries and chef gem to allow chef to provision
+# users and databases - this has to come next to allow mysql_database_user
+# and similar resources to work.
 mysql_client_installation_package 'default'
-package 'libmysqlclient-dev'
+mysql2_chef_gem 'default'
 
-mysql2_chef_gem 'default' do
-  action :install
+# Provision a root mysql client config file with credentials
+# This has to come immediately after the service definition as it is used
+# by the custom_config resource to load timezones
+user_mysql_config '/root/.my.cnf' do
+  connection      node.mysql_root_connection()
+  default_charset 'utf8'
 end
 
+include_recipe 'ingenerator-mysql::custom_config'
+
+# Fix logrotation for the default server
+include_recipe 'ingenerator-mysql::fix_logrotate'
+
 # Provision application databases and users if required
-include_recipe "ingenerator-mysql::app_db_server"
+include_recipe 'ingenerator-mysql::app_db_server'
