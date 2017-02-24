@@ -1,6 +1,6 @@
 inGenerator MySQL cookbook
 =================================
-[![Build Status](https://travis-ci.org/ingenerator/chef-ingenerator-mysql.png?branch=master)](https://travis-ci.org/ingenerator/chef-ingenerator-mysql)
+[![Build Status](https://travis-ci.org/ingenerator/chef-ingenerator-mysql.png?branch=0.x)](https://travis-ci.org/ingenerator/chef-ingenerator-mysql)
 
 The `ingenerator-mysql` cookbook supports standard installation of mySQL for our applications
 that use it, and also defines attributes and recipes that support applications that depend on
