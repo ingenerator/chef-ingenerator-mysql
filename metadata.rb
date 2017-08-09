@@ -7,7 +7,7 @@ description 'Standard mySQL installation for our applications, including relevan
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
 issues_url 'https://github.com/ingenerator/chef-ingenerator-mysql/issues'
 source_url 'https://github.com/ingenerator/chef-ingenerator-mysql'
-version '0.3.0'
+version '0.4.0'
 
 %w(ubuntu).each do |os|
   supports os
