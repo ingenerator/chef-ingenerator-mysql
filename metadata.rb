@@ -1,7 +1,8 @@
 name 'ingenerator-mysql'
 maintainer 'Andrew Coulton'
 maintainer_email 'andrew@ingenerator.com'
-license 'Apache 2.0'
+license 'Apache-2.0'
+chef_version '>=12.18.31'
 description 'Standard mySQL installation for our applications, including relevant PHP and application config'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
 issues_url 'https://github.com/ingenerator/chef-ingenerator-mysql/issues'
