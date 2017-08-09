@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/). Note that
 
 ## Unreleased
 
+* Exclude build-time code from generated cookbook (in the hope this may improve
+  build time)
 * Fix namespace collision deprecation warnings in Chef 12
 * [POTENTIALLY BREAKING] Require v2 of mysql2_chef_gem for Chef 13 compatibility
   - this may cause issues with downstream dependencies.
