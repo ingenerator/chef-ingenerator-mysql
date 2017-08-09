@@ -68,7 +68,7 @@ action_class do
   end
 
   def seed_database_command
-    "cat #{seed_file_path} | #{mysql_client_cmd} --database=#{schema} && rm #{seed_file_path}"
+    "cat #{seed_file_path} | #{mysql_client_cmd} --database=#{new_resource.schema} && rm #{seed_file_path}"
   end
 
   def mysql_client_cmd
