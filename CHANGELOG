@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/). Note that
 
 ## Unreleased
 
+* [POTENTIALLY BREAKING] Require v2 of mysql2_chef_gem for Chef 13 compatibility
+  - this may cause issues with downstream dependencies.
 * Update build dependencies and build against Chef 12 and Chef 13
 
 ## 0.3.0 (2017-02-23)
