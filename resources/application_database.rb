@@ -25,7 +25,7 @@ action :create do
     action        :grant
     connection    node.mysql_root_connection()
     username      app_db_attributes['user']
-    database_name schema
+    database_name new_resource.schema
     host          app_db_attributes['connect_anywhere'] ? '%' : 'localhost'
     password      app_db_attributes['password']
     privileges    app_db_attributes['privileges'].list_active_keys
@@ -68,7 +68,7 @@ action_class do
   end
 
   def seed_database_command
-    "cat #{seed_file_path} | #{mysql_client_cmd} --database=#{schema} && rm #{seed_file_path}"
+    "cat #{seed_file_path} | #{mysql_client_cmd} --database=#{new_resource.schema} && rm #{seed_file_path}"
   end
 
   def mysql_client_cmd

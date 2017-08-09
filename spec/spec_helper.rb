@@ -8,6 +8,13 @@ RSpec.configure do |c|
   c.filter_run(focus: true)
   c.run_all_when_everything_filtered = true
 
+  # Default platform / version to mock Ohai data from
+  c.platform = 'ubuntu'
+  c.version  = '14.04'
+
+  # Don't clear cookbooks from the server-runner between each test for performance
+  c.server_runner_clear_cookbooks = false
+
   c.before(:each) do
     allow_any_instance_of(Chef::Node).to receive(:ingenerator_project_name).and_return('stubproject')
     allow_any_instance_of(Chef::Node).to receive(:node_environment).and_return(:localdev)

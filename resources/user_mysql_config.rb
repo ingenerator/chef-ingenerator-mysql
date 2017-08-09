@@ -38,7 +38,7 @@ property :default_charset, String
 default_action :create
 
 action :create do
-  file path do
+  file new_resource.path do
     user      new_resource.user
     mode      new_resource.mode
     content   config_file_content

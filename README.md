@@ -9,7 +9,7 @@ installed as part of the php install.
 
 Requirements
 ------------
-- Chef 12.13 or higher
+- Chef 12.18 or higher
 - **Ruby 2.3 or higher**
 
 Installation
@@ -17,7 +17,8 @@ Installation
 We recommend adding to your `Berksfile` and using [Berkshelf](http://berkshelf.com/):
 
 ```ruby
-cookbook 'ingenerator-mysql', git: 'git://github.com/ingenerator/chef-ingenerator-mysql', branch: 'master'
+source 'https://chef-supermarket.ingenerator.com'
+cookbook 'ingenerator-mysql', '~>0.4.0'
 ```
 
 Have your main project cookbook *depend* on ingenerator-mysql by editing the `metadata.rb` for your cookbook.

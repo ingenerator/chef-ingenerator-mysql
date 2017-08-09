@@ -5,6 +5,15 @@ This project adheres to [Semantic Versioning](http://semver.org/). Note that
 
 ## Unreleased
 
+## 0.4.0 (2017-08-09)
+
+* Exclude build-time code from generated cookbook (in the hope this may improve
+  build time)
+* Fix namespace collision deprecation warnings in Chef 12
+* [POTENTIALLY BREAKING] Require v2 of mysql2_chef_gem for Chef 13 compatibility
+  - this may cause issues with downstream dependencies.
+* Update build dependencies and build against Chef 12 and Chef 13
+
 ## 0.3.0 (2017-02-23)
 
 * Remove explicit install of libmysqlclient-dev - this was a workaround for

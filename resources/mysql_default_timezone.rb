@@ -35,6 +35,6 @@ end
 
 action_class do
   def mysql_client_cmd
-    "mysql --defaults-extra-file=#{credential_file} --database=mysql"
+    "mysql --defaults-extra-file=#{new_resource.credential_file} --database=mysql"
   end
 end
