@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/). Note that
 
 ## Unreleased
 
+* [BREAKING] Now expects to be on Ubuntu 18.04
 * [BREAKING] Drop chef12 support
 
 ## 0.4.1 (2017-08-10)
