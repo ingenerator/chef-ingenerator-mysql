@@ -31,6 +31,10 @@ if '/var/run/mysqld/mysqld.sock' != node['mysql']['default_server_socket']
   raise ArgumentError.new("You MUST NOT attempt to customise node['mysql']['default_server_socket']. Leave it alone!")
 end
 
+if '/var/lib/mysql' != node['mysql']['data_dir']
+  raise ArgumentError.new("You MUST NOT attempt to customise node['mysql']['data_dir']. Leave it alone!")
+end
+
 # Install all packages plus the ruby client gem for mysql
 package 'mysql-server-5.7'
 package 'mysql-client-5.7'

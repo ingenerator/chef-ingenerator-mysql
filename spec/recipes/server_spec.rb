@@ -4,14 +4,15 @@ describe 'ingenerator-mysql::server' do
   let (:mysql_attrs)       { {} }
   let (:node_environment)  { :localdev }
   let (:root_connection)   { { username: 'rooty', password: 'whatever', host: '127.0.0.1' } }
-  let (:chef_run) do
+  let (:chef_runner) do
     ChefSpec::SoloRunner.new do |node|
       mysql_attrs.each do |key, value|
         node.normal['mysql'][key] = value
       end
       node.normal['project']['services']['db']['password'] = 'custompass'
-    end.converge described_recipe
+    end
   end
+  let (:chef_run) { chef_runner.converge described_recipe }
 
   before (:example) do
     allow_any_instance_of(Chef::Node).to receive(:mysql_root_connection).and_return(root_connection)
@@ -31,7 +32,12 @@ describe 'ingenerator-mysql::server' do
 
     it 'throws if some fool tries to change the socket path' do
       chef_run.node.normal['mysql']['default_server_socket'] = '/foo/bar'
-      expect { chef_run.converge described_recipe }.to raise_error /MUST NOT attempt to customise/
+      expect { chef_run.converge described_recipe }.to raise_error /MUST NOT attempt to customise node\['mysql'\]\['default_server_socket'\]/
+    end
+
+    it 'throws if some fool tries to change the data directory' do
+      chef_run.node.normal['mysql']['data_dir'] = '/foo/bar'
+      expect { chef_run.converge described_recipe }.to raise_error /MUST NOT attempt to customise node\['mysql'\]\['data_dir'\]/
     end
   end
 
@@ -61,6 +67,10 @@ describe 'ingenerator-mysql::server' do
 
     it 'fixed mysql logrotation via the ingenerator-mysql::fix_logrotate recipe' do
       expect(chef_run).to include_recipe 'ingenerator-mysql::fix_logrotate'
+    end
+
+    it 'defines the default mysql data_dir for other things to reference' do
+      expect(chef_run.node['mysql']['data_dir']).to eq('/var/lib/mysql')
     end
 
   end

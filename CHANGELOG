@@ -5,6 +5,9 @@ This project adheres to [Semantic Versioning](http://semver.org/). Note that
 
 ## Unreleased
 
+* [BREAKING] Ensure chef isn't trying to move the mysql data directory - leave it configured as /var/lib/mysql and
+  bind-mount it if you need it somewhere else. This is *much* easier than mucking about with config, apparmor, etc.
+  Note you need the mount point provisioned before you install the mysql package.
 * [BREAKING] Drop dependency on mysql cookbook, just install from packages with ubuntu default directories etc -
   service will be `mysql` as standard not the half-broken `mysql-default` the old cookbook tries to provision:
   * REMOVES all concept of root having a password at all - uses local socket auth
