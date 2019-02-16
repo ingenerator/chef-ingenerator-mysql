@@ -41,7 +41,12 @@ end
 # users and databases - this has to come next to allow mysql_database_user
 # and similar resources to work.
 mysql_client_installation_package 'default'
-mysql2_chef_gem 'default'
+
+gem_package 'mysql2' do
+  gem_binary RbConfig::CONFIG['bindir'] + '/gem'
+  version    '0.5.2'
+  action     :install
+end
 
 # Provision a root mysql client config file with credentials
 # This has to come immediately after the service definition as it is used

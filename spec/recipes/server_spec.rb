@@ -60,8 +60,8 @@ describe 'ingenerator-mysql::server' do
       expect(chef_run).to include_recipe 'ingenerator-mysql::custom_config'
     end
 
-    it 'installs the mysql2_chef_gem to enable database cookbook providers' do
-      expect(chef_run).to install_mysql2_chef_gem 'default'
+    it 'installs the mysql2 gem to enable database cookbook providers' do
+      expect(chef_run).to install_gem_package 'mysql2'
     end
 
     it 'manages the application database via the ingenerator-mysql::app_db_server recipe' do
