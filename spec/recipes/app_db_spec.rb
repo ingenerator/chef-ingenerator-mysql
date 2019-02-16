@@ -8,8 +8,8 @@ describe 'ingenerator-mysql::app_db' do
   end
 
   context 'with its attributes' do
-    it 'adds php5-mysql to the list of extensions the php cookbook should install' do
-      expect(chef_run.node['php']['module_packages']['php5-mysql']).to be true
+    it 'adds php7.2-mysql to the list of extensions the php cookbook should install' do
+      expect(chef_run.node['php']['module_packages']['php7.2-mysql']).to be true
     end
   end
 end

@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/). Note that
 
 ## Unreleased
 
+* [BREAKING] Now triggers our php cookbook to install php7.2-mysql package rather than php5-mysql
 * [BREAKING] Now expects to be on Ubuntu 18.04
 * [BREAKING] Drop chef12 support
 
