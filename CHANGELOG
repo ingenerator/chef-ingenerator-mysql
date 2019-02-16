@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/). Note that
 
 ## Unreleased
 
+* [BREAKING] Drop chef12 support
+
 ## 0.4.1 (2017-08-10)
 
 * Fix exclusion of build-time files from vendored cookbook
