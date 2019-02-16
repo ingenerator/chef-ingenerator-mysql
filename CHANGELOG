@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/). Note that
 
 ## Unreleased
 
+* [BREAKING] Drop dependency on mysql cookbook, just install from packages with ubuntu default directories etc -
+  service will be `mysql` as standard not the half-broken `mysql-default` the old cookbook tries to provision:
+  * REMOVES all concept of root having a password at all - uses local socket auth
+  * REMOVES the /root/.my.cnf with password - uses local socket authentication for the root user per mysql/ubuntu
+    default
+  * COMBINES all custom config into a single my.cnf to ensure it overrides the mysql stuff
+  * DROPS various internal resources and recipes
+  * LOSES a bunch of spec coverage because this cookbook only has to live another couple of months
 * [BREAKING] Drop dependency on mysql2_chef_gem cookbook, just install the gem manually in our server recipe
 * [BREAKING] Now triggers our php cookbook to install php7.2-mysql package rather than php5-mysql
 * [BREAKING] Now expects to be on Ubuntu 18.04

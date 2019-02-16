@@ -1,37 +1,28 @@
 require 'spec_helper'
 
 describe 'ingenerator-mysql::dev_db' do
-  let (:root_password)    { nil }
   let (:node_environment) { :localdev }
   let (:recreate_always)  { nil }
   let (:sql_files)        { {} }
 
-  let (:chef_run) do
+  let (:chef_runner) do
     ChefSpec::SoloRunner.new do |node|
-      node.normal['mysql']['server_root_password']      = root_password unless root_password.nil?
       node.normal['mysql']['dev_db']['recreate_always'] = recreate_always unless recreate_always.nil?
       node.normal['mysql']['dev_db']['sql_files']       = sql_files
-    end.converge(described_recipe)
+    end
   end
+  let (:chef_run) { chef_runner.converge(described_recipe) }
 
   before (:example) do
     allow_any_instance_of(Chef::Node).to receive(:node_environment).and_return(node_environment)
     allow_any_instance_of(Chef::Recipe).to receive(:node_environment).and_return(node_environment)
   end
 
-  context 'if the root password is not mysql' do
-    let (:root_password) { 'somethingsecure' }
-
-    it 'generates an exception to avoid accidentally running on a live database' do
-      expect { chef_run }.to raise_error(RuntimeError)
-    end
-  end
-
   context 'when configured with cookbook file sql filenames' do
     let (:sql_files)         { { 'mycookbook::dev_db/table.sql' => true } }
     let (:local_schema_path) { chef_run.node['mysql']['dev_db']['schema_path'] }
     let (:local_file_path)   { local_schema_path + '/dev_db/table.sql' }
-    let (:mysql_command)     { "cat #{local_schema_path}/dev_db/table.sql | mysql -uroot -p#{chef_run.node['mysql']['server_root_password']}" }
+    let (:mysql_command)     { "cat #{local_schema_path}/dev_db/table.sql | mysql" }
 
     it 'ensures the parent directory exists' do
       expect(chef_run).to create_directory(local_schema_path + '/dev_db').with(

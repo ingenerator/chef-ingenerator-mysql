@@ -1,0 +1,18 @@
+# MySQL config file
+# PROVISIONED BY CHEF - DO NOT OVERWRITE
+
+# Include default config from ubuntu packages
+!includedir /etc/mysql/conf.d/
+!includedir /etc/mysql/mysql.conf.d/
+
+# Custom configuration
+[mysqld]
+bind-address=<%=@bind_address%>
+default-time-zone=<%=@default_time_zone%>
+
+# Options set in node['mysql']['custom_config']
+<% @options.each do |option| -%>
+<%=option[:key]%>=<%=option[:value]%>
+<% end -%>
+
+

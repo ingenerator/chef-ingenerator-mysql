@@ -16,4 +16,3 @@ end
 depends 'apt', '~> 6.0'
 depends 'database', '~> 6.0'
 depends 'ingenerator-helpers', '~> 1.0'
-depends 'mysql', '~> 8.2'

@@ -20,15 +20,12 @@
 # limitations under the License.
 #
 
-# Define insecure root passwords for dev boxes. These MUST be upgraded to secure for production
-default['mysql']['server_root_password'] = 'mysql'
-
 # By default bind only to 127.0.0.1 - override for external access (or access over ssh forwarding)
 default['mysql']['bind_address'] = '127.0.0.1'
 
-# The mysql cookbook is built to provision multiple servers per instance and so places sockets
-# in non-standard places. By default, use the standard ubuntu socket path so that we don't have
-# to reconfigure all the various places that might attempt to connect to the instance.
+# Set the default_server_socket attribute so that anything that was using it can continue to do so
+# NOTE however that this MUST NOT be changed or it will probably cause all manner of grief with us
+# using auth-sockets and the change it might move between package install and mysql configuration
 default['mysql']['default_server_socket'] = '/var/run/mysqld/mysqld.sock'
 
 # Ensure that apt update runs at compile-time, to prevent issues with installing the mysql client

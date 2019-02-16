@@ -7,7 +7,7 @@ describe_resource 'resources::application_database' do
   let (:project_name)    { 'myproject' }
 
   let (:mysql_query_out) { "*************************** 1. row ***************************\nCOUNT(*): 0\n" }
-  let (:mysql_cmd)       { 'mysql --defaults-extra-file=/root/.my.cnf --vertical -e"SELECT COUNT(*) FROM information_schema.columns WHERE table_schema=\'' + test_schema + '\'"' }
+  let (:mysql_cmd)       { 'mysql --vertical -e"SELECT COUNT(*) FROM information_schema.columns WHERE table_schema=\'' + test_schema + '\'"' }
   let (:seed_exists?)    { false }
   let (:seed_file)       { '/tmp/database-seeds/' + test_schema + '.sql' }
 
@@ -57,7 +57,7 @@ describe_resource 'resources::application_database' do
           let (:seed_exists?) { true }
           it 'populates the database from the seed and deletes it' do
             expect(chef_run).to run_execute('seed peoples database').with(
-              command: 'cat /tmp/database-seeds/peoples.sql | mysql --defaults-extra-file=/root/.my.cnf --database=peoples && rm /tmp/database-seeds/peoples.sql'
+              command: 'cat /tmp/database-seeds/peoples.sql | mysql --database=peoples && rm /tmp/database-seeds/peoples.sql'
             )
           end
         end

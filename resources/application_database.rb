@@ -56,7 +56,7 @@ action_class do
 
   # Check if the resource schema has any tables or views
   def schema_empty?
-    cmd = mysql_client_cmd + ' --vertical -e"SELECT COUNT(*) FROM information_schema.columns WHERE table_schema=\'' + new_resource.schema + '\'"'
+    cmd = 'mysql --vertical -e"SELECT COUNT(*) FROM information_schema.columns WHERE table_schema=\'' + new_resource.schema + '\'"'
     output = shell_out!(cmd).stdout
     matches = /^COUNT\(\*\):\s+([0-9]+)$/m.match(output)
     raise "Unexpected query result: \n" + output unless matches
@@ -68,11 +68,7 @@ action_class do
   end
 
   def seed_database_command
-    "cat #{seed_file_path} | #{mysql_client_cmd} --database=#{new_resource.schema} && rm #{seed_file_path}"
-  end
-
-  def mysql_client_cmd
-    'mysql --defaults-extra-file=/root/.my.cnf'
+    "cat #{seed_file_path} | mysql --database=#{new_resource.schema} && rm #{seed_file_path}"
   end
 
   def warn_not_seeded
