@@ -11,7 +11,7 @@ describe_resource 'resources::user_mysql_config' do
 
       it 'raises a validation exception if no connection' do
         chef_runner.node.normal['test']['no_connection'] = true
-        expect { chef_run }.to raise_error(Chef::Exceptions::ValidationFailed, /connection is required/)
+        expect { chef_run }.to raise_error(Chef::Exceptions::ValidationFailed, /connection is a required property/)
       end
 
       it 'raises a validation exception if connection has no password' do
