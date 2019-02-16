@@ -36,9 +36,7 @@ template '/etc/logrotate.d/mysql-server' do
     socket:   node['mysql']['default_server_socket'],
     log_files: [
       '/var/log/mysql.log',
-      '/var/log/mysql-default/mysql.log',
-      '/var/log/mysql-default/mysql-slow.log',
-      '/var/log/mysql-default/error.log'
+      '/var/log/mysql/*.log',
     ]
   )
 end

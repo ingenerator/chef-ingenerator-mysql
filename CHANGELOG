@@ -13,6 +13,7 @@ This project adheres to [Semantic Versioning](http://semver.org/). Note that
   * COMBINES all custom config into a single my.cnf to ensure it overrides the mysql stuff
   * DROPS various internal resources and recipes
   * LOSES a bunch of spec coverage because this cookbook only has to live another couple of months
+  * CHANGES the paths that are managed by the mysql logrotate we provision
 * [BREAKING] Drop dependency on mysql2_chef_gem cookbook, just install the gem manually in our server recipe
 * [BREAKING] Now triggers our php cookbook to install php7.2-mysql package rather than php5-mysql
 * [BREAKING] Now expects to be on Ubuntu 18.04

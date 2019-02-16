@@ -22,7 +22,7 @@ describe 'ingenerator-mysql::fix_logrotate' do
   end
 
   it 'replaces the default mysql logrotate script' do
-    expect_logs = Regexp.quote('/var/log/mysql-default/error.log /var/log/mysql-default/mysql-slow.log /var/log/mysql-default/mysql.log /var/log/mysql.log {')
+    expect_logs = Regexp.quote('/var/log/mysql.log /var/log/mysql/*.log {')
     expect_cmd  = Regexp.quote('CMD="/usr/bin/mysqladmin -ulogrotate -plogrotate --socket=/var/run/some.sock flush-logs"')
 
     expect(chef_run).to render_file('/etc/logrotate.d/mysql-server')
