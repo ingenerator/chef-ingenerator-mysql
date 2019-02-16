@@ -12,7 +12,7 @@
 resource_name :application_database
 
 # The name of the schema to create, seed and grant rights on
-property :schema, String, name_property: true, required: true
+property :schema, String, name_property: true
 
 default_action :create
 
