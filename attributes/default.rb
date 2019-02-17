@@ -20,16 +20,18 @@
 # limitations under the License.
 #
 
-# Define insecure root passwords for dev boxes. These MUST be upgraded to secure for production
-default['mysql']['server_root_password'] = 'mysql'
-
 # By default bind only to 127.0.0.1 - override for external access (or access over ssh forwarding)
 default['mysql']['bind_address'] = '127.0.0.1'
 
-# The mysql cookbook is built to provision multiple servers per instance and so places sockets
-# in non-standard places. By default, use the standard ubuntu socket path so that we don't have
-# to reconfigure all the various places that might attempt to connect to the instance.
+# Set the default_server_socket attribute so that anything that was using it can continue to do so
+# NOTE however that this MUST NOT be changed or it will probably cause all manner of grief with us
+# using auth-sockets and the change it might move between package install and mysql configuration
 default['mysql']['default_server_socket'] = '/var/run/mysqld/mysqld.sock'
+
+# Set the data_dir for anything that needs to reference it
+# NOTE this MUST NOT be changed - it will have NO IMPACT on mysql config and will BREAK everything else
+# If you want the data in a custom path, provision a permanent bind mount to this location BEFORE you install mysql
+default['mysql']['data_dir'] = '/var/lib/mysql'
 
 # Ensure that apt update runs at compile-time, to prevent issues with installing the mysql client
 # (see https://github.com/opscode-cookbooks/apt/pull/75)

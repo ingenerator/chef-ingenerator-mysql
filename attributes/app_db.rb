@@ -47,5 +47,5 @@ end
 end
 
 # --- Language and application bindings
-# Trigger PHP to install the php5-mysql package
-default['php']['module_packages']['php5-mysql'] = true
+# Trigger PHP to install the php7.2-mysql package
+default['php']['module_packages']['php7.2-mysql'] = true

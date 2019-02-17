@@ -27,30 +27,30 @@ raise_if_legacy_attributes(
   'mysql.remove_anonymous_users'
 )
 
-raise_unless_customised('mysql.server_root_password') if not_environment?(:localdev, :buildslave)
-
-# Install and configure the mysql server
-mysql_service 'default' do
-  action                [:create, :start]
-  bind_address          node['mysql']['bind_address']
-  initial_root_password node['mysql']['server_root_password']
-  socket                node['mysql']['default_server_socket']
+if '/var/run/mysqld/mysqld.sock' != node['mysql']['default_server_socket']
+  raise ArgumentError.new("You MUST NOT attempt to customise node['mysql']['default_server_socket']. Leave it alone!")
 end
 
-# Install the mysql client libraries and chef gem to allow chef to provision
-# users and databases - this has to come next to allow mysql_database_user
-# and similar resources to work.
-mysql_client_installation_package 'default'
-mysql2_chef_gem 'default'
-
-# Provision a root mysql client config file with credentials
-# This has to come immediately after the service definition as it is used
-# by the custom_config resource to load timezones
-user_mysql_config '/root/.my.cnf' do
-  connection      node.mysql_root_connection()
-  default_charset 'utf8'
+if '/var/lib/mysql' != node['mysql']['data_dir']
+  raise ArgumentError.new("You MUST NOT attempt to customise node['mysql']['data_dir']. Leave it alone!")
 end
 
+# Install all packages plus the ruby client gem for mysql
+package 'mysql-server-5.7'
+package 'mysql-client-5.7'
+package 'libmysqlclient-dev'
+gem_package 'mysql2' do
+  gem_binary RbConfig::CONFIG['bindir'] + '/gem'
+  version    '0.5.2'
+  action     :install
+end
+
+# Initialise the mysql server if required
+mysql_server_init 'init mysql' do
+  action [:secure_db, :import_timezones]
+end
+
+# Configure custom config
 include_recipe 'ingenerator-mysql::custom_config'
 
 # Fix logrotation for the default server

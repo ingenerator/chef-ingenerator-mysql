@@ -21,8 +21,7 @@
 #
 
 # Protect against running on a live instance
-root_connection = node.mysql_root_connection()
-unless root_connection[:password] == 'mysql'
+unless is_environment?(:localdev, :buildslave)
   raise "It looks unsafe to run the ingenerator-mysql::dev_db recipe on this database server\n"\
         "The root password has been changed from mysql, which suggests this might not be a \n"\
         "development or test server. This recipe would wipe your db and replace it with test\n"\
@@ -35,7 +34,7 @@ recreate_always   = node['mysql']['dev_db']['recreate_always']
 node['mysql']['dev_db']['sql_files'].list_active_keys.each do |cook_file|
   cookbook_name, relative_file = cook_file.split('::')
   local_path    = File.join(local_schema_path, relative_file)
-  mysql_command = "cat #{local_path} | mysql -uroot -p#{root_connection[:password]}"
+  mysql_command = "cat #{local_path} | mysql"
 
   # Ensure the local directory exists
   directory File.dirname(local_path) do

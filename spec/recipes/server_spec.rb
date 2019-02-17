@@ -4,14 +4,15 @@ describe 'ingenerator-mysql::server' do
   let (:mysql_attrs)       { {} }
   let (:node_environment)  { :localdev }
   let (:root_connection)   { { username: 'rooty', password: 'whatever', host: '127.0.0.1' } }
-  let (:chef_run) do
+  let (:chef_runner) do
     ChefSpec::SoloRunner.new do |node|
       mysql_attrs.each do |key, value|
         node.normal['mysql'][key] = value
       end
       node.normal['project']['services']['db']['password'] = 'custompass'
-    end.converge described_recipe
+    end
   end
+  let (:chef_run) { chef_runner.converge described_recipe }
 
   before (:example) do
     allow_any_instance_of(Chef::Node).to receive(:mysql_root_connection).and_return(root_connection)
@@ -28,27 +29,27 @@ describe 'ingenerator-mysql::server' do
         expect { chef_run.converge described_recipe }.to raise_error(Ingenerator::Helpers::Attributes::LegacyAttributeDefinitionError)
       end
     end
+
+    it 'throws if some fool tries to change the socket path' do
+      chef_run.node.normal['mysql']['default_server_socket'] = '/foo/bar'
+      expect { chef_run.converge described_recipe }.to raise_error /MUST NOT attempt to customise node\['mysql'\]\['default_server_socket'\]/
+    end
+
+    it 'throws if some fool tries to change the data directory' do
+      chef_run.node.normal['mysql']['data_dir'] = '/foo/bar'
+      expect { chef_run.converge described_recipe }.to raise_error /MUST NOT attempt to customise node\['mysql'\]\['data_dir'\]/
+    end
   end
 
   context 'with default configuration' do
-    it 'creates the default mysql service' do
-      expect(chef_run).to create_mysql_service 'default'
+    %w(mysql-server-5.7 mysql-client-5.7 libmysqlclient-dev).each do | pkg |
+      it "installs the #{pkg} package" do
+        expect(chef_run).to install_package pkg
+      end
     end
 
-    it 'starts the default mysql service' do
-      expect(chef_run).to start_mysql_service 'default'
-    end
-
-    it 'assigns the server socket path' do
-      expect(chef_run).to create_mysql_service('default').with(
-        socket: chef_run.node['mysql']['default_server_socket']
-      )
-    end
-
-    it 'binds to accept only localhost connections' do
-      expect(chef_run).to create_mysql_service('default').with(
-        bind_address: '127.0.0.1'
-      )
+    it 'installs the mysql2 gem' do
+      expect(chef_run).to install_gem_package 'mysql2'
     end
 
     it 'uses the standard ubuntu distribution path for the mysql socket' do
@@ -60,10 +61,6 @@ describe 'ingenerator-mysql::server' do
       expect(chef_run).to include_recipe 'ingenerator-mysql::custom_config'
     end
 
-    it 'installs the mysql2_chef_gem to enable database cookbook providers' do
-      expect(chef_run).to install_mysql2_chef_gem 'default'
-    end
-
     it 'manages the application database via the ingenerator-mysql::app_db_server recipe' do
       expect(chef_run).to include_recipe 'ingenerator-mysql::app_db_server'
     end
@@ -72,74 +69,10 @@ describe 'ingenerator-mysql::server' do
       expect(chef_run).to include_recipe 'ingenerator-mysql::fix_logrotate'
     end
 
-    it 'provisions a mysql user config at /root/.my.cnf with the root credentials' do
-      expect(chef_run).to create_user_mysql_config('/root/.my.cnf').with(
-        user:            'root',
-        mode:            0o600,
-        connection:      root_connection,
-        safe_updates:    false,
-        default_charset: 'utf8'
-      )
+    it 'defines the default mysql data_dir for other things to reference' do
+      expect(chef_run.node['mysql']['data_dir']).to eq('/var/lib/mysql')
     end
 
-    context 'in :localdev environment' do
-      let (:node_environment) { :localdev }
-
-      it 'assigns the initial root password as `mysql`' do
-        expect(chef_run).to create_mysql_service('default').with(
-          initial_root_password: 'mysql'
-        )
-      end
-    end
-
-    context 'in :buildslave environment' do
-      let (:node_environment) { :buildslave }
-
-      it 'assigns the initial root password as `mysql`' do
-        expect(chef_run).to create_mysql_service('default').with(
-          initial_root_password: 'mysql'
-        )
-      end
-    end
-
-    context 'in any other environment' do
-      let (:node_environment) { :anything_productiony }
-
-      context 'if root password is still default' do
-        it 'throws exception' do
-          expect do
-            chef_run
-          end.to raise_exception(Ingenerator::Helpers::Attributes::DefaultAttributeValueError)
-        end
-      end
-
-      context 'with customised root password' do
-        let (:mysql_attrs) { { 'server_root_password' => 'mysecurepassword' } }
-
-        it 'assigns the custom root password' do
-          expect(chef_run).to create_mysql_service('default').with(
-            initial_root_password: 'mysecurepassword'
-          )
-        end
-      end
-    end
   end
 
-  context 'with custom configuration' do
-    let (:mysql_attrs) do
-      {
-        'server_root_password'  => 'foobar',
-        'bind_address'          => '0.0.0.0',
-        'default_server_socket' => '/var/mysql.sock'
-      }
-    end
-
-    it 'assigns custom parameters to mysql service' do
-      expect(chef_run).to create_mysql_service('default').with(
-        initial_root_password: 'foobar',
-        bind_address: '0.0.0.0',
-        socket: '/var/mysql.sock'
-      )
-    end
-  end
 end

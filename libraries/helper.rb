@@ -25,14 +25,9 @@ module Ingenerator
     module Helpers
       # Gets the current root account connection details as a hash
       def mysql_root_connection
-        unless node['mysql'] && node['mysql']['server_root_password']
-          raise ArgumentError, 'No root password defined in node.mysql.server_root_password'
-        end
-
         {
-          host: '127.0.0.1',
           username: 'root',
-          password: node['mysql']['server_root_password']
+          socket:    node['mysql']['default_server_socket']
         }
       end
     end

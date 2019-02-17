@@ -26,7 +26,7 @@ raise_if_legacy_attributes(
 )
 
 # Ensure the mysql_service resource is defined for notification
-find_resource(:mysql_service, 'default') do
+find_resource(:service, 'mysql') do
   action :nothing
 end
 
@@ -39,15 +39,35 @@ if node['mysql']['custom_config']
   end
 end
 
-mysql_config 'custom' do
-  instance 'default'
-  source   'custom.cnf.erb'
-  variables(
-    options: options
-  )
+# Options must be sorted in order, as Ruby doesn't guarantee hash order by default and so can cause
+# unexpected file changes
+raise_if_legacy_attributes(
+  'mysql.tunable',
+  'mysql.custom_config.bind_address',
+  'mysql.custom_config.default-time-zone'
+)
+
+options = []
+if node['mysql']['custom_config']
+  node['mysql']['custom_config'].sort.each do |key, value|
+    options << { key: key, value: value } unless value.nil?
+  end
 end
 
-# Configure the database timezone
-mysql_default_timezone node['mysql']['default-time-zone'] do
-  notifies :restart, 'mysql_service[default]', :immediately
+# Provision custom configuration - it's now safe to always include the timezones because we
+# always import them before we get to this point
+# Note we overwrite the ubuntu default because mysql doesn't guarantee the order of loading
+# from a conf.d directory
+
+template "/etc/mysql/my.cnf" do
+  owner 'root'
+  group 'root'
+  mode  '0640'
+  variables(
+    bind_address:      node['mysql']['bind_address'],
+    default_time_zone: node['mysql']['default-time-zone'],
+    options:           options
+  )
+  source 'my.cnf.erb'
+  notifies :restart, 'service[mysql]', :immediately
 end

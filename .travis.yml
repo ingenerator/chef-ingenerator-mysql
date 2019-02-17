@@ -2,11 +2,10 @@ dist: trusty
 language: ruby
 cache:    bundler
 rvm:
-  - 2.3
+  - 2.4
 sudo:     false
 gemfile:
   - Gemfile
-  - gemfiles/chef-12/Gemfile
 script:
   - bundle exec foodcritic --epic-fail any . --exclude spec
   - bundle exec rspec --color --format documentation

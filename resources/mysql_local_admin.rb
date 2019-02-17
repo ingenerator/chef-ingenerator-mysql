@@ -16,7 +16,7 @@
 resource_name :mysql_local_admin
 
 # This will be both the system user and database user
-property :user, String, name_property: true, required: true
+property :user, String, name_property: true
 
 # If no password is provided, the node attributes are checked and failing that a
 # password is generated and stored in node attributes for future reuse

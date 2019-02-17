@@ -7,7 +7,7 @@ describe_resource 'resources::application_database' do
   let (:project_name)    { 'myproject' }
 
   let (:mysql_query_out) { "*************************** 1. row ***************************\nCOUNT(*): 0\n" }
-  let (:mysql_cmd)       { 'mysql --defaults-extra-file=/root/.my.cnf --vertical -e"SELECT COUNT(*) FROM information_schema.columns WHERE table_schema=\'' + test_schema + '\'"' }
+  let (:mysql_cmd)       { 'mysql --vertical -e"SELECT COUNT(*) FROM information_schema.columns WHERE table_schema=\'' + test_schema + '\'"' }
   let (:seed_exists?)    { false }
   let (:seed_file)       { '/tmp/database-seeds/' + test_schema + '.sql' }
 
@@ -19,10 +19,6 @@ describe_resource 'resources::application_database' do
     allow_any_instance_of(Chef::Node).to receive(:mysql_root_connection).and_return(root_connection)
     allow_any_instance_of(Chef::Node).to receive(:ingenerator_project_name).and_return(project_name)
 
-    mysql_shellout_result = double('shellout').as_null_object
-    allow(Mixlib::ShellOut).to receive(:new).with(mysql_cmd, any_args).and_return(mysql_shellout_result)
-    allow(mysql_shellout_result).to receive(:stdout).and_return(mysql_query_out)
-
     # Need to allow File.exist? to work normally and only skip for this one
     allow(File).to receive(:exist?).with(anything).and_call_original
     allow(File).to receive(:exist?).with(seed_file).and_return(seed_exists?)
@@ -30,6 +26,12 @@ describe_resource 'resources::application_database' do
     # Suppress actually outputting the warnings about not seeding a database
     allow(Chef::Log).to receive(:warn).with(anything).and_call_original
     allow(Chef::Log).to receive(:warn).with(/Database \w+ is empty/)
+  end
+
+  stubs_for_provider("application_database[peoples]") do | provider |
+    mysql_shellout_result = double('shellout').as_null_object
+    allow(provider).to receive_shell_out(mysql_cmd).and_return(mysql_shellout_result)
+    allow(mysql_shellout_result).to receive(:stdout).and_return(mysql_query_out)
   end
 
   describe 'create' do
@@ -55,7 +57,7 @@ describe_resource 'resources::application_database' do
           let (:seed_exists?) { true }
           it 'populates the database from the seed and deletes it' do
             expect(chef_run).to run_execute('seed peoples database').with(
-              command: 'cat /tmp/database-seeds/peoples.sql | mysql --defaults-extra-file=/root/.my.cnf --database=peoples && rm /tmp/database-seeds/peoples.sql'
+              command: 'cat /tmp/database-seeds/peoples.sql | mysql --database=peoples && rm /tmp/database-seeds/peoples.sql'
             )
           end
         end
