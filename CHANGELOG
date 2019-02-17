@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/). Note that
 
 ## Unreleased
 
+## 0.5.0 (2019-02-17)
+
 * [BREAKING] Ensure chef isn't trying to move the mysql data directory - leave it configured as /var/lib/mysql and
   bind-mount it if you need it somewhere else. This is *much* easier than mucking about with config, apparmor, etc.
   Note you need the mount point provisioned before you install the mysql package.
