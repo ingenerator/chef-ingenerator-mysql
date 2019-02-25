@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/). Note that
 
 ## Unreleased
 
+* [BUG] mysql config files need to be world-readable. If not then mysql will silently IGNORE them and you will spend
+  ages trying to work out why the config settings aren't being applied. Worse, the pre-start command on ubuntu runs
+  as root so it can read them and will fail with an error if they have invalid values, but then the actual start command
+  runs as mysql so won't see them. FFS.
+
 ## 0.5.0 (2019-02-17)
 
 * [BREAKING] Ensure chef isn't trying to move the mysql data directory - leave it configured as /var/lib/mysql and

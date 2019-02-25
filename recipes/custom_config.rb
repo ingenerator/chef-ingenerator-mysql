@@ -62,7 +62,7 @@ end
 template "/etc/mysql/my.cnf" do
   owner 'root'
   group 'root'
-  mode  '0640'
+  mode  '0644'
   variables(
     bind_address:      node['mysql']['bind_address'],
     default_time_zone: node['mysql']['default-time-zone'],
