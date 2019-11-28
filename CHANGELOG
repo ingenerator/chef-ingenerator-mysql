@@ -5,6 +5,15 @@ This project adheres to [Semantic Versioning](http://semver.org/). Note that
 
 ## Unreleased
 
+* [BUG] compile mysql2 gem against mysqlclient 5.7.27 to resolve segfault when running alongside 5.7.28 or greater.
+  There is an incompatibility between some system libraries - potentially openssl - and the ones shipped with chef. When
+  the mysql2 gem is installed, by default it compiles the native extension and links it to system libraries for
+  mysqlclient-dev but to chef's internal libraries for SSL and other packages. This then causes a segfault at runtime
+  because the libs are not compatible. As a workaround, we ship the 5.7.27 version of libmysqlclient and ...-dev from
+  the related ubuntu packages. We then provision these into /opt/chef/embedded and then (re)compile the mysql2 gem
+  to link against these. This fixes the segfault while leaving the rest of the system happily on 5.7.28 (or later
+  updates).
+
 ## 0.5.1 (2019-02-25)
 
 * [BUG] mysql config files need to be world-readable. If not then mysql will silently IGNORE them and you will spend
