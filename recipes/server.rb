@@ -39,11 +39,14 @@ end
 package 'mysql-server-5.7'
 package 'mysql-client-5.7'
 package 'libmysqlclient-dev'
-gem_package 'mysql2' do
-  gem_binary RbConfig::CONFIG['bindir'] + '/gem'
-  version    '0.5.2'
-  action     :install
-end
+include_recipe 'ingenerator-mysql::mysql_gem'
+
+# Installed by the recipe above with a fixed binding on libmysqlclient 5.7.27
+#gem_package 'mysql2' do
+#  gem_binary RbConfig::CONFIG['bindir'] + '/gem'
+#  version    '0.5.2'
+#  action     :install
+#end
 
 # Initialise the mysql server if required
 mysql_server_init 'init mysql' do
