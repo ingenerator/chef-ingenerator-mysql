@@ -11,7 +11,7 @@
         sharedscripts
         postrotate
            # These credentials only allow flush logs, and only from localhost
-           CMD="/usr/bin/mysqladmin -u<%=@user %> -p<%=@password %> --socket=<%=@socket %> flush-logs"
+           CMD="/usr/bin/mysqladmin --defaults-extra-file=/etc/mysql/logrotate.cnf --socket=<%=@socket %> flush-logs"
            SYSLOG="/usr/bin/logger -t mysql.logrotate"
            LOGFILE=$(mktemp /tmp/mysql-post-logrotate.XXXXXXX)
 
