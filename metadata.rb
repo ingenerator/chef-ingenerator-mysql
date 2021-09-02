@@ -16,3 +16,8 @@ end
 depends 'apt', '~> 6.0'
 depends 'database', '~> 6.0'
 depends 'ingenerator-helpers', '~> 1.0'
+
+# Not really, but database requires postgres and newer postgres doesn't support older chef
+depends 'postgresql', '~> 6.1'
+# Not really, but postgresql requires build-essential and build-essential requires seven_zip and that requires new chef :(
+depends 'seven_zip', '~> 3.0'
